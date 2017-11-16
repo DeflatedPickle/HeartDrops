@@ -1,0 +1,16 @@
+[
+{
+  "modid": "heartdrops",
+  "name": "Heart Drops",
+  "description": "A Minecraft mod that adds hearts that may be picked up for extra health.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["DeflatedPickle"],
+  "credits": "Forge, FML",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
