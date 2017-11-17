@@ -7,6 +7,7 @@ import vazkii.arl.item.ItemMod;
 public class ItemHeart extends ItemMod {
     public ItemHeart() {
         super("heart");
+        setMaxStackSize(1);
         setCreativeTab(CreativeTabs.MISC);
     }
 

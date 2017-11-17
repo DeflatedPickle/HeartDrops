@@ -32,7 +32,7 @@ public class HeartDrops {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         logger.info("Starting Init.");
-        // proxy.init();
+        proxy.init();
         logger.info("Finished Init.");
     }
 
