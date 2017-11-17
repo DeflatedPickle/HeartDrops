@@ -13,7 +13,6 @@ public class ClientProxy implements CommonProxy{
 
     @Override
     public void init() {
-        // FMLCommonHandler.instance().bus().register(new FMLEventHandler());
         MinecraftForge.EVENT_BUS.register(new FMLEventHandler());
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandler());
     }
