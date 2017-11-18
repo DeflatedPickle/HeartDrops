@@ -2,6 +2,7 @@ package com.deflatedpickle.heartdrops;
 
 import com.deflatedpickle.heartdrops.proxy.CommonProxy;
 
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -19,6 +20,8 @@ public class HeartDrops {
 
     @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
     private static CommonProxy proxy;
+
+    public static Configuration configuration;
 
     private static final Logger logger = LogManager.getLogger(Reference.NAME);
 
