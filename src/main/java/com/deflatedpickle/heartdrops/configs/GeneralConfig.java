@@ -18,6 +18,19 @@ public class GeneralConfig {
     @Config.LangKey("config.heartdrops.dropHardcore")
     public static Boolean dropHardcore = false;
 
+    public enum Difficulty {
+        PEACEFUL,
+        EASY,
+        NORMAL,
+        HARD,
+        ALL
+    }
+
+    @Config.Name("Drop On Gamemode")
+    @Config.Comment("Changes what games mode hearts drop on.")
+    @Config.LangKey("config.heartdrops.dropGamemode")
+    public static Difficulty dropGamemode = Difficulty.ALL;
+
     @SubscribeEvent
     public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(Reference.MOD_ID)) {

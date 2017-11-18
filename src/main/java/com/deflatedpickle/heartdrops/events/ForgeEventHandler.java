@@ -32,6 +32,7 @@ public class ForgeEventHandler {
             }
 
             if (!spawnItems) { return; }
+            if (!player.world.getDifficulty().name().equals(GeneralConfig.dropGamemode.toString()) && !GeneralConfig.dropGamemode.toString().equals("ALL")) { return; }
 
             EntityItem item = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, 1));
             entity.world.spawnEntity(item);
