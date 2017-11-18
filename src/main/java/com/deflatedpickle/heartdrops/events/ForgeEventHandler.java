@@ -1,5 +1,6 @@
 package com.deflatedpickle.heartdrops.events;
 
+import com.deflatedpickle.heartdrops.configs.GeneralConfig;
 import com.deflatedpickle.heartdrops.init.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -23,15 +24,17 @@ public class ForgeEventHandler {
             }
 
             if (player != null) {
-                if (player.getHealth() < player.getMaxHealth()) {
-                    spawnItems = true;
+                if (player.getHealth() < player.getMaxHealth()) { spawnItems = true; }
+
+                if (!GeneralConfig.dropHardcore) {
+                    if (player.world.getMinecraftServer().isHardcore()){ return; }
                 }
             }
 
-            if (spawnItems) {
-                EntityItem item = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, 1));
-                entity.world.spawnEntity(item);
-            }
+            if (!spawnItems) { return; }
+
+            EntityItem item = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, 1));
+            entity.world.spawnEntity(item);
         }
     }
 }
