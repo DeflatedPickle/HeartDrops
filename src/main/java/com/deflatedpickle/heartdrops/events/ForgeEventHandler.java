@@ -24,7 +24,10 @@ public class ForgeEventHandler {
             }
 
             if (player != null) {
-                if (player.getHealth() < player.getMaxHealth()) { spawnItems = true; }
+                // if (player.getHealth() < player.getMaxHealth()) { spawnItems = true; }
+                if (GeneralConfig.dropWhen == GeneralConfig.When.HURT) {
+                    if (player.getHealth() < player.getMaxHealth()) { spawnItems = true; }
+                } else if (GeneralConfig.dropWhen == GeneralConfig.When.ALWAYS) { spawnItems = true; }
 
                 if (!GeneralConfig.dropHardcore) {
                     if (player.world.getMinecraftServer().isHardcore()){ return; }

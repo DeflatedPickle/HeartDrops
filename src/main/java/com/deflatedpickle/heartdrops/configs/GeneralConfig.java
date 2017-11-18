@@ -31,6 +31,17 @@ public class GeneralConfig {
     @Config.LangKey("config.heartdrops.dropGamemode")
     public static Difficulty dropGamemode = Difficulty.ALL;
 
+    public enum When {
+        HURT,
+        ALWAYS,
+        NEVER
+    }
+
+    @Config.Name("Drop When")
+    @Config.Comment("Changes when the hearts will drop.")
+    @Config.LangKey("config.heartdrops.dropWhen")
+    public static When dropWhen = When.HURT;
+
     @SubscribeEvent
     public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(Reference.MOD_ID)) {
