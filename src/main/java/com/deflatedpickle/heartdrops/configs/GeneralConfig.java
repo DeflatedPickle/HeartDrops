@@ -36,8 +36,8 @@ public class GeneralConfig {
         ALL
     }
 
-    @Config.Name("Drop On Gamemode")
-    @Config.Comment("Changes what games mode hearts drop on.")
+    @Config.Name("Drop On Difficulty")
+    @Config.Comment("Changes what difficulty hearts drop on.")
     @Config.LangKey("config.heartdrops.dropGamemode")
     public static Difficulty dropGamemode = Difficulty.ALL;
 
