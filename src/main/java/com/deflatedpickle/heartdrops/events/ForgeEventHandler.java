@@ -16,7 +16,7 @@ public class ForgeEventHandler {
         EntityPlayer player = null;
         Boolean spawnItems = false;
 
-        if (!event.getEntity().world.isRemote) {
+        if (!entity.world.isRemote) {
             if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
                 player = (EntityPlayer) event.getSource().getImmediateSource();
             } else if(event.getSource().getTrueSource() instanceof EntityPlayer) {
@@ -35,7 +35,7 @@ public class ForgeEventHandler {
             }
 
             if (!spawnItems) { return; }
-            if (!player.world.getDifficulty().name().equals(GeneralConfig.dropGamemode.toString()) && !GeneralConfig.dropGamemode.toString().equals("ALL")) { return; }
+            if (!player.world.getDifficulty().name().equals(GeneralConfig.dropDifficulty.toString()) && !GeneralConfig.dropDifficulty.toString().equals("ALL")) { return; }
 
             EntityItem item = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, 1));
             entity.world.spawnEntity(item);

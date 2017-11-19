@@ -39,7 +39,14 @@ public class GeneralConfig {
     @Config.Name("Drop On Difficulty")
     @Config.Comment("Changes what difficulty hearts drop on.")
     @Config.LangKey("config.heartdrops.dropGamemode")
-    public static Difficulty dropGamemode = Difficulty.ALL;
+    public static Difficulty dropDifficulty = Difficulty.ALL;
+
+    public enum GameMode {
+        SURVIVAL,
+        CREATIVE,
+        ADVENTURE,
+        ALL
+    }
 
     @SubscribeEvent
     public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
