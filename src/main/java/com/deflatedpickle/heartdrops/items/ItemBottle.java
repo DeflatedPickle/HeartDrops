@@ -12,12 +12,13 @@ import net.minecraft.world.World;
 public class ItemBottle extends ItemBase {
     public ItemBottle() {
         super("heart_bottle");
+        this.setMaxDamage(10);
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-
+        
         if (player.canEat(true)) {
             player.setActiveHand(hand);
             return new ActionResult<>(EnumActionResult.SUCCESS, stack);
@@ -32,6 +33,7 @@ public class ItemBottle extends ItemBase {
             EntityPlayer player = (EntityPlayer) entity;
 
             player.heal(2f);
+            this.setDamage(stack, this.getDamage(stack) + 1);
         }
 
         return stack;
