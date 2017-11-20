@@ -18,10 +18,14 @@ public class ItemBottle extends ItemBase {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        
-        if (player.canEat(true)) {
-            player.setActiveHand(hand);
-            return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+
+        if (this.getDamage(stack) < 0) {
+            if (player.canEat(true)) {
+                player.setActiveHand(hand);
+                return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+            } else {
+                return new ActionResult<>(EnumActionResult.FAIL, stack);
+            }
         } else {
             return new ActionResult<>(EnumActionResult.FAIL, stack);
         }
