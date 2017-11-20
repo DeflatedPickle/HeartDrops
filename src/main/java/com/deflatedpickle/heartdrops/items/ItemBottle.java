@@ -1,5 +1,6 @@
 package com.deflatedpickle.heartdrops.items;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,17 @@ public class ItemBottle extends ItemBase {
         } else {
             return new ActionResult<>(EnumActionResult.FAIL, stack);
         }
+    }
+
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entity) {
+        if (entity instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) entity;
+
+            player.heal(2f);
+        }
+
+        return stack;
     }
 
     @Override
