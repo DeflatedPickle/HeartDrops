@@ -1,7 +1,6 @@
 package com.deflatedpickle.heartdrops.init;
 
 import com.deflatedpickle.heartdrops.items.ItemBase;
-import com.deflatedpickle.heartdrops.items.ItemBottle;
 import net.minecraft.item.Item;
 
 public class ModItems {
