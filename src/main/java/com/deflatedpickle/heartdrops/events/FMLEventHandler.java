@@ -10,7 +10,7 @@ public class FMLEventHandler {
         ItemStack item = event.getItem().getItem();
         if (item.getUnlocalizedName().equals("item.heartdrops:heart")) {
             event.getEntityPlayer().heal(2f);
-            item.shrink(1);
+            item.stackSize--;
         }
     }
 }
