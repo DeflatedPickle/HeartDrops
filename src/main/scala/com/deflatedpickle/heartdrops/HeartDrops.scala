@@ -21,14 +21,14 @@ object HeartDrops {
   val log: Logger = LogManager.getLogger(Reference.NAME)
 
   @EventHandler
-  def preInit(event: FMLPreInitializationEvent) {
+  def preInit(event: FMLPreInitializationEvent): Unit = {
     log.info("Starting preInit.")
     proxy.preInit(event)
     log.info("Finished preInit.")
   }
 
   @EventHandler
-  def init(event: FMLInitializationEvent) {
+  def init(event: FMLInitializationEvent): Unit = {
     log.info("Starting Init.")
     proxy.init(event)
     log.info("Finished Init.")
