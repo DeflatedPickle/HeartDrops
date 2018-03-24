@@ -23,14 +23,14 @@ object HeartDrops {
   @EventHandler
   def preInit(event: FMLPreInitializationEvent) {
     log.info("Starting preInit.")
-    proxy.preInit()
+    proxy.preInit(event)
     log.info("Finished preInit.")
   }
 
   @EventHandler
   def init(event: FMLInitializationEvent) {
     log.info("Starting Init.")
-    proxy.init()
+    proxy.init(event)
     log.info("Finished Init.")
   }
 }
