@@ -9,6 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Objects;
+
 public class ForgeEventHandler {
     @SubscribeEvent
     public void onLivingDeathEvent(LivingDeathEvent event) {
@@ -35,7 +37,7 @@ public class ForgeEventHandler {
                 }
 
                 if (!GeneralConfig.dropHardcore) {
-                    if (player.world.getMinecraftServer().isHardcore()) {
+                    if (Objects.requireNonNull(player.world.getMinecraftServer()).isHardcore()) {
                         return;
                     }
                 }
