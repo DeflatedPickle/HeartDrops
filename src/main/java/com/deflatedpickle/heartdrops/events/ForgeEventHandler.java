@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Objects;
+import java.util.Random;
 
 public class ForgeEventHandler {
     @SubscribeEvent
@@ -51,7 +52,7 @@ public class ForgeEventHandler {
                 return;
             }
 
-            EntityItem item = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, 1));
+            EntityItem item = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, new Random().nextInt(GeneralConfig.dropRange)));
             entity.world.spawnEntity(item);
         }
     }

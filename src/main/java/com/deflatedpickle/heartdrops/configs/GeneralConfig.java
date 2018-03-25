@@ -48,6 +48,11 @@ public class GeneralConfig {
         ALL
     }
 
+    @Config.Name("Drop Range")
+    @Config.Comment("Changes the range of hearts that can drop.")
+    @Config.LangKey("config.heartdrops.dropRange")
+    public static Integer dropRange = 1;
+
     @SubscribeEvent
     public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(Reference.MOD_ID)) {
