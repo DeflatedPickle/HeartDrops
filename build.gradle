@@ -16,9 +16,22 @@ version = "1.12.2-2.0.0.0"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = "heartdrops"
 
+tasks.compileScala.dependsOn.remove("compileJava")
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
+    dependsOn compileScala
     sourceCompatibility = targetCompatibility = '1.8'
+}
+
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/scala', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
 }
 
 minecraft {
@@ -36,6 +49,7 @@ repositories {
 }
 
 dependencies {
+    compile 'org.scala-lang:scala-library:2.12.5'
     deobfCompile "autoreglib:AutoRegLib:1.3:16"
 }
 
