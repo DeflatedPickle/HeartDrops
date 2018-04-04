@@ -1,6 +1,6 @@
 package com.deflatedpickle.heartdrops
 
-import com.deflatedpickle.heartdrops.events.{FMLEventHandler, ForgeEventHandler}
+import com.deflatedpickle.heartdrops.events.ForgeEventHandler
 import com.deflatedpickle.heartdrops.init.ModItems
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.Configuration
@@ -28,7 +28,6 @@ object HeartDrops {
   @EventHandler
   def init(event: FMLInitializationEvent): Unit = {
     log.info("Starting Init.")
-    MinecraftForge.EVENT_BUS.register(new FMLEventHandler)
     MinecraftForge.EVENT_BUS.register(new ForgeEventHandler)
     log.info("Finished Init.")
   }
