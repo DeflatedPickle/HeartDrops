@@ -2,6 +2,7 @@ package com.deflatedpickle.heartdrops.events
 
 import java.util.Objects
 
+import com.deflatedpickle.heartdrops.api.IDropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.ModItems
 import net.minecraft.entity.Entity
@@ -66,7 +67,15 @@ class ForgeEventHandler {
         return
       }
 
-      val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, 1))
+      var dropAmount = 1
+
+      if (event.getSource.getImmediateSource.isInstanceOf[IDropHearts]) {
+        if (event.getSource.getImmediateSource.asInstanceOf[IDropHearts].doesDropHearts()) {
+          dropAmount = event.getSource.getImmediateSource.asInstanceOf[IDropHearts].dropAmount()
+        }
+      }
+
+      val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount))
       entity.world.spawnEntity(item)
     }
   }
