@@ -5,7 +5,7 @@ import java.util.Objects
 import com.deflatedpickle.heartdrops.api.IDropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.ModItems
-import net.minecraft.entity.Entity
+import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -19,8 +19,10 @@ class ForgeEventHandler {
     val item = event.getItem.getItem
 
     if (item.getUnlocalizedName == "item.heartdrops:heart") {
-      event.getEntityPlayer.heal(2f)
-      item.shrink(1)
+      for (_ <- 0 to item.getCount) {
+        event.getEntityPlayer.heal(2f)
+        item.shrink(1)
+      }
     }
   }
 
@@ -29,6 +31,7 @@ class ForgeEventHandler {
     val entity = event.getEntity
     var player: EntityPlayer = null
     var spawnItems = false
+    var lootingLevel = 0
 
     if (!entity.world.isRemote) {
       if (event.getSource.getImmediateSource.isInstanceOf[EntityPlayer]) {
@@ -41,6 +44,8 @@ class ForgeEventHandler {
       }
 
       if (player != null) {
+        lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.getEnchantmentByID(21), event.getSource.getImmediateSource.asInstanceOf[EntityPlayer].getHeldItemMainhand)
+
         if (GeneralConfig.dropWhen == GeneralConfig.When.HURT) {
           if (player.getHealth < player.getMaxHealth) {
             spawnItems = true
@@ -75,7 +80,7 @@ class ForgeEventHandler {
         }
       }
 
-      val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount))
+      val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount * (lootingLevel + 1)))
       entity.world.spawnEntity(item)
     }
   }

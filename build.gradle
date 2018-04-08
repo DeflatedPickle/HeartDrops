@@ -12,7 +12,7 @@ apply plugin: 'scala'
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 // Versions follow this format: MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
-version = "1.12.2-2.0.3.0"
+version = "1.12.2-2.0.5.0"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = "heartdrops"
 
