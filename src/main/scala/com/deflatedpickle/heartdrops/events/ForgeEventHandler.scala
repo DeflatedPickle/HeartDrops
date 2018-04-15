@@ -22,7 +22,7 @@ class ForgeEventHandler {
 
     if (item.getUnlocalizedName == "item.heartdrops:heart") {
       spawnCounter = item.getCount
-      
+
       collectHearts(event, item)
     }
   }
