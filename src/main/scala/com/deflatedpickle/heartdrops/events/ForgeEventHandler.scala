@@ -14,15 +14,16 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class ForgeEventHandler {
+  private var spawnCounter = 0
+
   @SubscribeEvent
   def onEntityItemPickupEvent(event: EntityItemPickupEvent): Unit = {
     val item = event.getItem.getItem
 
     if (item.getUnlocalizedName == "item.heartdrops:heart") {
-      for (_ <- 0 to item.getCount) {
-        event.getEntityPlayer.heal(2f)
-        item.shrink(1)
-      }
+      spawnCounter = item.getCount
+      
+      collectHearts(event, item)
     }
   }
 
@@ -82,6 +83,16 @@ class ForgeEventHandler {
 
       val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount * (lootingLevel + 1)))
       entity.world.spawnEntity(item)
+    }
+  }
+
+  def collectHearts(event: EntityItemPickupEvent, item: ItemStack): Unit = {
+    if (spawnCounter >= 1) {
+      event.getEntityPlayer.heal(2f)
+      item.shrink(1)
+
+      spawnCounter -= 1
+      collectHearts(event, item)
     }
   }
 }
