@@ -77,11 +77,11 @@ class ForgeEventHandler {
         return
       }
 
-      var dropAmount = 1
+      var dropAmount = 0
 
-      if (event.getSource.getImmediateSource.isInstanceOf[IDropHearts]) {
-        if (event.getSource.getImmediateSource.asInstanceOf[IDropHearts].doesDropHearts()) {
-          dropAmount = event.getSource.getImmediateSource.asInstanceOf[IDropHearts].dropAmount()
+      if (event.getEntityLiving.isInstanceOf[IDropHearts]) {
+        if (event.getEntityLiving.asInstanceOf[IDropHearts].doesDropHearts()) {
+          dropAmount = event.getEntityLiving.asInstanceOf[IDropHearts].dropAmount()
         }
       }
 
