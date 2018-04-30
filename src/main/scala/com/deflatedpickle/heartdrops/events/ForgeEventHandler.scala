@@ -83,6 +83,13 @@ class ForgeEventHandler {
         if (event.getEntityLiving.asInstanceOf[IDropHearts].doesDropHearts()) {
           dropAmount = event.getEntityLiving.asInstanceOf[IDropHearts].dropAmount()
         }
+        else {
+          dropAmount = 0
+        }
+      }
+
+      if (dropAmount > 0 && GeneralConfig.useRange) {
+        dropAmount = HeartDrops.random.nextInt(GeneralConfig.dropRange)
       }
 
       val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount * (lootingLevel + 1)))

@@ -11,12 +11,16 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
+import scala.util.Random
+
 
 @Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.ACCEPTED_VERSIONS, dependencies = "required-after:autoreglib;", modLanguage = "scala")
 object HeartDrops {
   var configuration: Configuration = _
 
   val log: Logger = LogManager.getLogger(Reference.NAME)
+
+  val random: Random = new Random()
 
   @EventHandler
   def preInit(event: FMLPreInitializationEvent): Unit = {

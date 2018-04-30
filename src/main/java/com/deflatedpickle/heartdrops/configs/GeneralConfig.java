@@ -12,6 +12,21 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Config(modid = Reference.MOD_ID, name = Reference.CONFIG_GENERAL, category = Configuration.CATEGORY_GENERAL)
 @Config.LangKey("config.heartdrops.general")
 public class GeneralConfig {
+    @Config.Name("Drop Range")
+    @Config.Comment("The range of hearts that can drop")
+    @Config.LangKey("config.heartdrops.dropRange")
+    public static Integer dropRange = 3;
+
+    @Config.Name("Use Range")
+    @Config.Comment("Changes whether or not the drop range is used.")
+    @Config.LangKey("config.heartdrops.useRange")
+    public static Boolean useRange = true;
+
+    @Config.Name("Default Drop Amount")
+    @Config.Comment("Changes the default amount of hearts that will drop from mobs who don't implement IDropHearts.")
+    @Config.LangKey("config.heartdrops.defaultAmount")
+    public static Integer defaultAmount = 1;
+
     public enum When {
         HURT,
         ALWAYS,
@@ -22,11 +37,6 @@ public class GeneralConfig {
     @Config.Comment("Changes when the hearts will drop.")
     @Config.LangKey("config.heartdrops.dropWhen")
     public static When dropWhen = When.HURT;
-
-    @Config.Name("Default Drop Amount")
-    @Config.Comment("Changes the default amount of hearts that will drop from mobs who don't implement IDropHearts.")
-    @Config.LangKey("config.heartdrops.defaultAmount")
-    public static Integer defaultAmount = 1;
 
     @Config.Name("Drop On Hardcore")
     @Config.Comment("Changes whether hearts drop on hardcore mode or not.")
