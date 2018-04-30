@@ -2,12 +2,14 @@ package com.deflatedpickle.heartdrops.events
 
 import java.util.Objects
 
+import com.deflatedpickle.heartdrops.HeartDrops
 import com.deflatedpickle.heartdrops.api.IDropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.ModItems
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.projectile.EntityTippedArrow
 import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
@@ -45,7 +47,9 @@ class ForgeEventHandler {
       }
 
       if (player != null) {
-        lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.getEnchantmentByID(21), event.getSource.getImmediateSource.asInstanceOf[EntityPlayer].getHeldItemMainhand)
+        if (player.isInstanceOf[EntityPlayer]) {
+          lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.getEnchantmentByID(21), player.getHeldItemMainhand)
+        }
 
         if (GeneralConfig.dropWhen == GeneralConfig.When.HURT) {
           if (player.getHealth < player.getMaxHealth) {
