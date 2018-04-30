@@ -23,6 +23,11 @@ public class GeneralConfig {
     @Config.LangKey("config.heartdrops.dropWhen")
     public static When dropWhen = When.HURT;
 
+    @Config.Name("Default Drop Amount")
+    @Config.Comment("Changes the default amount of hearts that will drop from mobs who don't implement IDropHearts.")
+    @Config.LangKey("config.heartdrops.defaultAmount")
+    public static Integer defaultAmount = 1;
+
     @Config.Name("Drop On Hardcore")
     @Config.Comment("Changes whether hearts drop on hardcore mode or not.")
     @Config.LangKey("config.heartdrops.dropHardcore")

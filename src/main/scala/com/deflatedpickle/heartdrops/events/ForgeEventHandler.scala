@@ -77,7 +77,7 @@ class ForgeEventHandler {
         return
       }
 
-      var dropAmount = 0
+      var dropAmount = GeneralConfig.defaultAmount
 
       if (event.getEntityLiving.isInstanceOf[IDropHearts]) {
         if (event.getEntityLiving.asInstanceOf[IDropHearts].doesDropHearts()) {
