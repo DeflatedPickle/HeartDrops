@@ -17,11 +17,6 @@ public class GeneralConfig {
     @Config.LangKey("config.heartdrops.dropRange")
     public static Integer dropRange = 3;
 
-    @Config.Name("Use Range")
-    @Config.Comment("Changes whether or not the drop range is used.")
-    @Config.LangKey("config.heartdrops.useRange")
-    public static Boolean useRange = true;
-
     @Config.Name("Default Drop Amount")
     @Config.Comment("Changes the default amount of hearts that will drop from mobs who don't implement IDropHearts.")
     @Config.LangKey("config.heartdrops.defaultAmount")

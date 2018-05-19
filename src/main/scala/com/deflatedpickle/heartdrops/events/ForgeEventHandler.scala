@@ -84,11 +84,10 @@ class ForgeEventHandler {
           dropAmount = event.getEntityLiving.asInstanceOf[IDropHearts].dropAmount()
         }
         else {
-          dropAmount = 0
+          return
         }
       }
-
-      if (dropAmount > 0 && GeneralConfig.useRange) {
+      else {
         dropAmount = HeartDrops.random.nextInt(GeneralConfig.dropRange)
       }
 
