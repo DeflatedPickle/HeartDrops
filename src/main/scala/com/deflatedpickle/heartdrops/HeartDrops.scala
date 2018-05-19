@@ -1,5 +1,7 @@
 package com.deflatedpickle.heartdrops
 
+import java.util.concurrent.ThreadLocalRandom
+
 import com.deflatedpickle.heartdrops.events.ForgeEventHandler
 import com.deflatedpickle.heartdrops.init.ModItems
 import net.minecraftforge.common.MinecraftForge
@@ -20,7 +22,7 @@ object HeartDrops {
 
   val log: Logger = LogManager.getLogger(Reference.NAME)
 
-  val random: Random = new Random()
+  val random: ThreadLocalRandom = ThreadLocalRandom.current()
 
   @EventHandler
   def preInit(event: FMLPreInitializationEvent): Unit = {

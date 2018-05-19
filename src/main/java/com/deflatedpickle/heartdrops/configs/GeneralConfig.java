@@ -28,6 +28,21 @@ public class GeneralConfig {
         NEVER
     }
 
+    @Config.Name("Golden Heart Chance")
+    @Config.Comment("The chance for a golden heart to drop (lower = more chance, higher = less chance).")
+    @Config.LangKey("config.heartdrops.goldHeartChance")
+    public static Integer goldHeartChance = 50;
+
+    @Config.Name("Golden Heart Looting Multiplier")
+    @Config.Comment("A multiplier that increases your chance to get a golden heart.")
+    @Config.LangKey("config.heartdrops.goldHeartLootingMultiplier")
+    public static Integer goldHeartLootingMultiplier = 5;
+
+    @Config.Name("Drop Golden Hearts")
+    @Config.Comment("Whether or not golden hearts will drop.")
+    @Config.LangKey("config.heartdrops.dropGoldHearts")
+    public static Boolean dropGoldHearts = true;
+
     @Config.Name("Drop When")
     @Config.Comment("Changes when the hearts will drop.")
     @Config.LangKey("config.heartdrops.dropWhen")

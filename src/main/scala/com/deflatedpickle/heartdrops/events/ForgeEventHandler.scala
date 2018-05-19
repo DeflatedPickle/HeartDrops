@@ -9,8 +9,7 @@ import com.deflatedpickle.heartdrops.init.ModItems
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.projectile.EntityTippedArrow
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -22,10 +21,9 @@ class ForgeEventHandler {
   def onEntityItemPickupEvent(event: EntityItemPickupEvent): Unit = {
     val item = event.getItem.getItem
 
-    if (item.getUnlocalizedName == "item.heartdrops:heart") {
+    if (item.getUnlocalizedName == "item.heartdrops:heart" || item.getUnlocalizedName == "item.heartdrops:golden_heart") {
       spawnCounter = item.getCount
-
-      collectHearts(event, item)
+      collectHearts(event, item, item.getUnlocalizedName.substring(item.getUnlocalizedName.indexOf(":") + 1))
     }
   }
 
@@ -91,18 +89,39 @@ class ForgeEventHandler {
         dropAmount = HeartDrops.random.nextInt(GeneralConfig.dropRange)
       }
 
-      val item: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount * (lootingLevel + 1)))
-      entity.world.spawnEntity(item)
+      // Add hearts to a list and loop through the list to create EntityItems and spawn the hearts
+      // val heartList = List()
+
+      if (GeneralConfig.dropGoldHearts) {
+        val goldHeartChance = HeartDrops.random.nextInt(0, (GeneralConfig.goldHeartChance - ((lootingLevel + 1) * GeneralConfig.goldHeartLootingMultiplier)) / (lootingLevel + 1))
+        println("Drop chance equals: " + (GeneralConfig.goldHeartChance - ((lootingLevel + 1) * GeneralConfig.goldHeartLootingMultiplier)) / (lootingLevel + 1))
+        if (goldHeartChance == 0) {
+          dropAmount -= 1
+
+          val entityItem: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.goldenHeart, 1))
+          entity.world.spawnEntity(entityItem)
+        }
+      }
+
+      val entityItem: EntityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ModItems.heart, dropAmount * (lootingLevel + 1)))
+      entity.world.spawnEntity(entityItem)
     }
   }
 
-  def collectHearts(event: EntityItemPickupEvent, item: ItemStack): Unit = {
+  def collectHearts(event: EntityItemPickupEvent, item: ItemStack, heartType: String): Unit = {
     if (spawnCounter >= 1) {
-      event.getEntityPlayer.heal(2f)
+      // println(heartType)
+      if (heartType == "heart") {
+        event.getEntityPlayer.heal(2f)
+      }
+      else if (heartType == "golden_heart") {
+        event.getEntityPlayer.setAbsorptionAmount(event.getEntityPlayer.getAbsorptionAmount + 2)
+      }
+
       item.shrink(1)
 
       spawnCounter -= 1
-      collectHearts(event, item)
+      collectHearts(event, item, heartType)
     }
   }
 }
