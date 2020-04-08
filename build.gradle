@@ -1,56 +1,49 @@
 buildscript {
+    ext.kotlin_version = '1.3.50'
+    ext.dokka_version = '0.10.0'
+
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.26.1"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
     }
 }
 
-apply plugin: 'scala'
+apply plugin: 'kotlin'
+apply plugin: "com.diffplug.gradle.spotless"
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 // Versions follow this format: MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
-version = "1.12.2-2.0.8.1"
+version = "1.12.2-3.0.0.0"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = "heartdrops"
 
-tasks.compileScala.dependsOn.remove("compileJava")
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    dependsOn compileScala
-    sourceCompatibility = targetCompatibility = '1.8'
-}
-
-sourceSets {
-    main {
-        scala {
-            srcDirs = ['src/main/scala', 'src/main/java']
-        }
-        java {
-            srcDirs = []
-        }
-    }
-}
-
 minecraft {
-    version = "1.12.2-14.23.0.2491"
+    version = "1.12.2-14.23.5.2847"
     runDir = "run"
 
-    mappings = "snapshot_20171002"
+    mappings = "snapshot_20180814"
 }
 
 repositories {
+    jcenter()
+    maven { url = "http://maven.shadowfacts.net/" }
     maven {
         name = "CurseForge"
         url = "https://minecraft.curseforge.com/api/maven/"
     }
+    mavenCentral()
 }
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.12.5'
-    deobfCompile "autoreglib:AutoRegLib:1.3:16"
+    implementation "net.shadowfacts:Forgelin:1.8.4"
+    implementation "glasspane:glasspane:1.12.2:1.0.1"
 }
 
 processResources {
@@ -65,5 +58,15 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
