@@ -1,6 +1,7 @@
 package com.deflatedpickle.heartdrops.event
 
 import com.deflatedpickle.heartdrops.HeartDrops
+import com.deflatedpickle.heartdrops.api.HeartType
 import com.deflatedpickle.heartdrops.capability.DropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.Item
@@ -25,6 +26,8 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.ForgeRegistries
+import kotlin.math.abs
+import kotlin.math.floor
 import kotlin.math.min
 
 class ForgeEventHandler {
@@ -51,7 +54,6 @@ class ForgeEventHandler {
 
         if (!event.entity.world.isRemote) {
             val source = event.source.trueSource
-            println("${source!!::class}")
 
             when (GeneralConfig.dropWhen) {
                 GeneralConfig.When.HURT -> {
@@ -71,6 +73,8 @@ class ForgeEventHandler {
                 GeneralConfig.When.NEVER -> return
             }
 
+            if (!spawnItems) return
+
             lootingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.getEnchantmentByID(21)!!, event.entityLiving.heldItemMainhand)
 
             var dropAmount = 0
@@ -89,14 +93,14 @@ class ForgeEventHandler {
                 if (GeneralConfig.goldHeart.drop) {
                     val bound = (GeneralConfig.goldHeart.chance + GeneralConfig.goldHeart.lootingMultiplier - ((lootingLevel + 1) * GeneralConfig.goldHeart.lootingMultiplier)) / (lootingLevel + 1)
                     if (HeartDrops.random.nextInt(0, bound) == 0) {
-                        heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, ItemStack(GoldenHeart(), 1)))
+                        HeartType.GOLD.drop(event, 1, heartList)
                     }
                 }
 
                 if (GeneralConfig.crystalHeart.drop) {
                     val bound = (GeneralConfig.crystalHeart.chance + GeneralConfig.crystalHeart.lootingMultiplier - ((lootingLevel + 1) * GeneralConfig.crystalHeart.lootingMultiplier)) / (lootingLevel + 1)
                     if (HeartDrops.random.nextInt(0, bound) == 0) {
-                        val itemStack = ItemStack(CrystalHeart(), 1)
+                        val itemStack = ItemStack(Item.crystal_heart, 1)
                         // How helpful it is to tell us what's bad...
                         // Otherwise, you'd be stuck with good and bad effects
                         // I'm not writing more code to filter them out :^)
@@ -111,32 +115,51 @@ class ForgeEventHandler {
                         heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, itemStack))
                     }
                 }
+            }
 
-                if (GeneralConfig.dropWhen == GeneralConfig.When.HURT) {
+            when (GeneralConfig.dropWhen) {
+                GeneralConfig.When.HURT -> {
                     when (GeneralConfig.dropAmount) {
                         GeneralConfig.DropAmount.UNTIL_FULL_HEALTH -> {
-                            heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, ItemStack(when {
-                                event.entityLiving.health + 2 <= event.entityLiving.maxHealth -> {
-                                    Item.heart
-                                }
-                                event.entityLiving.health + 1 <= event.entityLiving.maxHealth -> {
-                                    Item.half_heart
-                                }
-                                else -> {
-                                    Items.AIR
-                                }
-                            }, 1)))
+                            if (event.source.trueSource != null) {
+                                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as EntityLivingBase).entityBoundingBox.grow(10.0)) { it is EntityItem }
 
+                                var hearts = 0
+                                for (entity in entityList) {
+                                    when (val item = (entity as EntityItem).item.item) {
+                                        is Heart -> {
+                                            if (item !is GoldenHeart && item !is CrystalHeart) {
+                                                hearts += item.type.healsBy
+                                            }
+                                        }
+                                    }
+                                }
+
+                                val amount = floor(((event.source.trueSource as EntityLivingBase).maxHealth - (event.source.trueSource as EntityLivingBase).health)).toInt() - hearts
+                                var cache = 0
+                                for (i in 1..amount step 2) {
+                                    HeartType.NORMAL.drop(event,
+                                            1,
+                                            heartList)
+                                    cache = i
+                                }
+
+                                HeartType.HALF.drop(event,
+                                        cache,
+                                        heartList)
+                            }
                         }
                         else -> {
                         }
                     }
-                } else {
+                }
+                GeneralConfig.When.ALWAYS ->
                     heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, ItemStack(Item.heart, 1)))
+                else -> {
                 }
             }
 
-            for (i in heartList.subList(0, min(heartList.size, GeneralConfig.dropRange))) {
+            for (i in heartList) {
                 entity.world.spawnEntity(i)
             }
         }
