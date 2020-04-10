@@ -1,3 +1,5 @@
+/* Copyright (c) 2020 DeflatedPickle under the MIT license */
+
 package com.deflatedpickle.heartdrops.item
 
 import com.deflatedpickle.heartdrops.api.HeartType

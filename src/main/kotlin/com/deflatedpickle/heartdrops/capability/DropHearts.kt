@@ -1,19 +1,20 @@
+/* Copyright (c) 2020 DeflatedPickle under the MIT license */
+
 package com.deflatedpickle.heartdrops.capability
 
 import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.IDropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
+import java.util.concurrent.Callable
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.nbt.NBTTagIntArray
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityInject
 import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.common.capabilities.ICapabilitySerializable
-import java.util.concurrent.Callable
 
 object DropHearts {
     val NAME = ResourceLocation(Reference.MOD_ID, "drop_hearts")

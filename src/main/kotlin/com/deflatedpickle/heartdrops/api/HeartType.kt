@@ -1,7 +1,8 @@
+/* Copyright (c) 2020 DeflatedPickle under the MIT license */
+
 package com.deflatedpickle.heartdrops.api
 
 import com.deflatedpickle.heartdrops.init.Item
-import com.deflatedpickle.heartdrops.item.GoldenHeart
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionUtils

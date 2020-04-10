@@ -1,6 +1,9 @@
+/* Copyright (c) 2020 DeflatedPickle under the MIT license */
+
 package com.deflatedpickle.heartdrops.event
 
 import com.deflatedpickle.heartdrops.HeartDrops
+import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.HeartType
 import com.deflatedpickle.heartdrops.capability.DropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
@@ -8,6 +11,8 @@ import com.deflatedpickle.heartdrops.init.Item
 import com.deflatedpickle.heartdrops.item.CrystalHeart
 import com.deflatedpickle.heartdrops.item.GoldenHeart
 import com.deflatedpickle.heartdrops.item.Heart
+import kotlin.math.floor
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
@@ -20,18 +25,61 @@ import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionEffect
 import net.minecraft.potion.PotionUtils
+import net.minecraftforge.client.event.ModelRegistryEvent
+import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.event.AttachCapabilitiesEvent
+import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.ForgeRegistries
-import kotlin.math.floor
 
-class ForgeEventHandler {
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+object ForgeEventHandler {
+    @SubscribeEvent
+    fun onRegisterItem(event: RegistryEvent.Register<net.minecraft.item.Item>) {
+        event.registry.registerAll(
+                Item.heart,
+                Item.half_heart,
+                Item.golden_heart,
+                Item.crystal_heart
+        )
+    }
+
+    @SubscribeEvent
+    fun onRegisterModel(event: ModelRegistryEvent) {
+        for (item in listOf(
+                Item.heart,
+                Item.half_heart,
+                Item.golden_heart,
+                Item.crystal_heart
+        )) {
+            ModelLoader.setCustomModelResourceLocation(
+                    item, 0,
+                    ModelResourceLocation(item.registryName, "inventory")
+            )
+        }
+    }
+
     @SubscribeEvent
     fun onEntityItemPickupEvent(event: EntityItemPickupEvent) {
         val itemStack = event.item.item
         val item = event.item.item.item
+
+        if (item is CrystalHeart) {
+            // How helpful it is to tell us what's bad...
+            // Otherwise, you'd be stuck with good and bad effects
+            // I'm not writing more code to filter them out :^)
+            ForgeRegistries.POTIONS.valuesCollection.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
+                PotionUtils.appendEffects(itemStack, mutableListOf(PotionEffect(
+                        this[HeartDrops.random.nextInt(this.size)],
+                        // It should last for *enough* time to get use out of it
+                        // TODO: Make crystal heart effects further customisable
+                        HeartDrops.random.nextInt(20 * 20, 20 * 30)
+                )))
+            }
+        }
 
         if (item is Heart) {
             collectHearts(event, itemStack)
@@ -67,7 +115,6 @@ class ForgeEventHandler {
                             }
                         }
                     }
-
                 }
                 GeneralConfig.When.ALWAYS -> spawnItems = true
                 GeneralConfig.When.NEVER -> return
@@ -100,19 +147,7 @@ class ForgeEventHandler {
                 if (GeneralConfig.crystalHeart.drop) {
                     val bound = (GeneralConfig.crystalHeart.chance + GeneralConfig.crystalHeart.lootingMultiplier - ((lootingLevel + 1) * GeneralConfig.crystalHeart.lootingMultiplier)) / (lootingLevel + 1)
                     if (HeartDrops.random.nextInt(0, bound) == 0) {
-                        val itemStack = ItemStack(Item.crystal_heart, 1)
-                        // How helpful it is to tell us what's bad...
-                        // Otherwise, you'd be stuck with good and bad effects
-                        // I'm not writing more code to filter them out :^)
-                        ForgeRegistries.POTIONS.valuesCollection.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
-                            PotionUtils.appendEffects(itemStack, mutableListOf(PotionEffect(
-                                    this[HeartDrops.random.nextInt(this.size)],
-                                    // It should last for *enough* time to get use out of it
-                                    // TODO: Make crystal heart effects further customisable
-                                    HeartDrops.random.nextInt(20 * 20, 20 * 30)
-                            )))
-                        }
-                        heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, itemStack))
+                        heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, ItemStack(Item.crystal_heart)))
                     }
                 }
             }
