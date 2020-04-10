@@ -15,20 +15,17 @@ import net.minecraft.entity.EntityLiving
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.projectile.EntityArrow
-import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionEffect
 import net.minecraft.potion.PotionUtils
 import net.minecraftforge.event.AttachCapabilitiesEvent
-import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.ForgeRegistries
-import kotlin.math.abs
 import kotlin.math.floor
-import kotlin.math.min
 
 class ForgeEventHandler {
     @SubscribeEvent
@@ -44,9 +41,12 @@ class ForgeEventHandler {
     @SubscribeEvent
     fun onLivingDropEvent(event: LivingDropsEvent) {
         var spawnItems = false
-        var lootingLevel = 0
+        val lootingLevel: Int
 
-        if (event.entity.world.difficulty != GeneralConfig.dropDifficulty) return
+        if (GeneralConfig.dropDifficulty != GeneralConfig.Difficulty.ALL &&
+                event.entity.world.difficulty.ordinal != GeneralConfig.dropDifficulty.ordinal) return
+        if (GeneralConfig.dropGameMode != GeneralConfig.GameMode.ALL &&
+                event.source.trueSource is EntityPlayer && ((event.source.trueSource as EntityPlayerMP).interactionManager.gameType.ordinal + 1) == GeneralConfig.dropGameMode.ordinal)
         // They've chosen to install the mod... but never want hearts to drop
         // Totally defeats the purpose of having it, but whatever
         if (GeneralConfig.dropWhen == GeneralConfig.When.NEVER) return
@@ -117,45 +117,67 @@ class ForgeEventHandler {
                 }
             }
 
+            var amount = 0
+
             when (GeneralConfig.dropWhen) {
                 GeneralConfig.When.HURT -> {
-                    when (GeneralConfig.dropAmount) {
-                        GeneralConfig.DropAmount.UNTIL_FULL_HEALTH -> {
-                            if (event.source.trueSource != null) {
-                                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as EntityLivingBase).entityBoundingBox.grow(10.0)) { it is EntityItem }
-
-                                var hearts = 0
-                                for (entity in entityList) {
-                                    when (val item = (entity as EntityItem).item.item) {
-                                        is Heart -> {
-                                            if (item !is GoldenHeart && item !is CrystalHeart) {
-                                                hearts += item.type.healsBy
-                                            }
-                                        }
-                                    }
-                                }
-
-                                val amount = floor(((event.source.trueSource as EntityLivingBase).maxHealth - (event.source.trueSource as EntityLivingBase).health)).toInt() - hearts
-                                var cache = 0
-                                for (i in 1..amount step 2) {
-                                    HeartType.NORMAL.drop(event,
-                                            1,
-                                            heartList)
-                                    cache = i
-                                }
-
-                                HeartType.HALF.drop(event,
-                                        cache,
-                                        heartList)
-                            }
-                        }
-                        else -> {
-                        }
+                    amount = when (GeneralConfig.dropAmount) {
+                        GeneralConfig.DropAmount.SPECIFIC ->
+                            GeneralConfig.dropAmountValue
+                        GeneralConfig.DropAmount.CHANCE ->
+                            HeartDrops.random.nextInt(GeneralConfig.dropAmountValue)
+                        GeneralConfig.DropAmount.PERCENTAGE_OF_MOB_HEALTH ->
+                            (GeneralConfig.dropAmountValue / 100f * event.entityLiving.maxHealth).toInt()
+                        GeneralConfig.DropAmount.UNTIL_FULL_HEALTH ->
+                            floor(((event.source.trueSource as EntityLivingBase).maxHealth - (event.source.trueSource as EntityLivingBase).health)).toInt()
                     }
                 }
                 GeneralConfig.When.ALWAYS ->
-                    heartList.add(EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, ItemStack(Item.heart, 1)))
+                    HeartType.NORMAL.drop(event, 1, heartList)
                 else -> {
+                }
+            }
+
+            var heartCount = 0
+            if (GeneralConfig.deriveFromDropped) {
+                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as EntityLivingBase).entityBoundingBox.grow(10.0)) { it is EntityItem }
+
+                for (entity in entityList) {
+                    when (val item = (entity as EntityItem).item.item) {
+                        is Heart -> {
+                            if (item !is GoldenHeart && item !is CrystalHeart) {
+                                heartCount += item.type.healsBy
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (GeneralConfig.capAtHealth) {
+                amount -= heartCount
+            }
+
+            var cache = 0
+            if (event.source.trueSource != null) {
+                for (i in 1..amount step 2) {
+                    HeartType.NORMAL.drop(event,
+                            1,
+                            heartList)
+                    cache = i
+                }
+            }
+
+            if (GeneralConfig.dropHalf) {
+                if (GeneralConfig.deriveFromDropped) {
+                    HeartType.HALF.drop(event,
+                            cache,
+                            heartList)
+                } else {
+                    if ((event.source.trueSource as EntityLivingBase).health + 1 == (event.source.trueSource as EntityLivingBase).maxHealth) {
+                        HeartType.HALF.drop(event,
+                                1,
+                                heartList)
+                    }
                 }
             }
 

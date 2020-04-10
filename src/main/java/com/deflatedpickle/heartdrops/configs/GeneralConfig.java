@@ -1,7 +1,6 @@
 package com.deflatedpickle.heartdrops.configs;
 
 import com.deflatedpickle.heartdrops.Reference;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -28,6 +27,22 @@ public class GeneralConfig {
     @Config.LangKey("config.heartdrops.dropAmount")
     public static @NotNull DropAmount dropAmount = DropAmount.UNTIL_FULL_HEALTH;
 
+    @Config.Comment({"The value used for the drop amount", "SPECIFIC = A specific value to drop", "CHANCE = The upper bound of a random chance", "PERCENTAGE_OF_MOB_HEALTH = The percentage of the health"})
+    @Config.LangKey("config.heartdrops.dromAmountValue")
+    public static @NotNull Integer dropAmountValue = 20;
+
+    @Config.Comment("Stops dropping hearts if there are enough on the ground to heal you")
+    @Config.LangKey("config.heartdrops.deriveFromDropped")
+    public static @NotNull Boolean deriveFromDropped = true;
+
+    @Config.Comment("Drops a half heart if you need it")
+    @Config.LangKey("config.heartdrops.dropHalf")
+    public static @NotNull Boolean dropHalf = true;
+
+    @Config.Comment("Caps the health dropped at your health")
+    @Config.LangKey("config.heartdrops.capAtHealth")
+    public static @NotNull Boolean capAtHealth = true;
+
     public enum When {
         HURT,
         ALWAYS,
@@ -42,16 +57,29 @@ public class GeneralConfig {
     @Config.LangKey("config.heartdrops.dropHardcore")
     public static Boolean dropHardcore = false;
 
+    public enum Difficulty {
+        PEACEFUL,
+        EASY,
+        NORMAL,
+        HARD,
+        ALL
+    }
+
     @Config.Comment("Changes what difficulty hearts drop on")
-    @Config.LangKey("config.heartdrops.dropGamemode")
-    public static @NotNull EnumDifficulty dropDifficulty = EnumDifficulty.EASY;
+    @Config.LangKey("config.heartdrops.dropDifficulty")
+    public static @NotNull Difficulty dropDifficulty = Difficulty.ALL;
 
     public enum GameMode {
         SURVIVAL,
         CREATIVE,
         ADVENTURE,
-        ALL;
+        SPECTATOR,
+        ALL
     }
+
+    @Config.Comment("Changes the game mode hearts drop on")
+    @Config.LangKey("config.heartdrops.dropGamemode")
+    public static GameMode dropGameMode = GameMode.ALL;
 
     @Config.Comment("Settings for golden hearts")
     @Config.LangKey("config.heartdrops.goldHeartCategory")
@@ -71,7 +99,6 @@ public class GeneralConfig {
         public Integer lootingMultiplier = 5;
     }
 
-
     @Config.Comment("Settings for crystal hearts")
     @Config.LangKey("config.heartdrops.crystalHeartCategory")
     public static @NotNull CrystalHeart crystalHeart = new CrystalHeart();
@@ -83,11 +110,11 @@ public class GeneralConfig {
 
         @Config.Comment("The chance for a crystal heart to drop")
         @Config.LangKey("config.heartdrops.crystalHeartChance")
-        public Integer chance = 50;
+        public Integer chance = 70;
 
         @Config.Comment("A multiplier that increases your chance to get a crystal heart")
         @Config.LangKey("config.heartdrops.crystalHeartLootingMultiplier")
-        public Integer lootingMultiplier = 5;
+        public Integer lootingMultiplier = 3;
     }
 
     @SubscribeEvent
