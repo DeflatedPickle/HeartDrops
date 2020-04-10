@@ -25,3 +25,6 @@ config.heartdrops.crystalHeartCategory=Crystal Heart Settings
 config.heartdrops.crystalHeartChance=Crystal Heart Chance
 config.heartdrops.crystalHeartLootingMultiplier=Crystal Heart Looting Multiplier
 config.heartdrops.dropCrystalHearts=Drop Crystal Hearts
+
+config.heartdrops.redHeartCategory=Red Heart Settings
+config.heartdrops.dropRedHearts=Drop Red Hearts

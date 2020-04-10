@@ -89,6 +89,16 @@ public class GeneralConfig {
   @Config.LangKey("config.heartdrops.dropGamemode")
   public static GameMode dropGameMode = GameMode.ALL;
 
+  @Config.Comment("Settings for red full and half hearts")
+  @Config.LangKey("config.heartdrops.redHeartCategory")
+  public static @NotNull RedHeart redHeart = new RedHeart();
+
+  public static class RedHeart {
+    @Config.Comment("Whether red full and half hearts will drop")
+    @Config.LangKey("config.heartdrops.dropRedHearts")
+    public Boolean drop = true;
+  }
+
   @Config.Comment("Settings for golden hearts")
   @Config.LangKey("config.heartdrops.goldHeartCategory")
   public static @NotNull GoldHeart goldHeart = new GoldHeart();
