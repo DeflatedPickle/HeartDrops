@@ -9,7 +9,6 @@ import com.deflatedpickle.heartdrops.capability.DropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.Item
 import com.deflatedpickle.heartdrops.item.CrystalHeart
-import com.deflatedpickle.heartdrops.item.GoldenHeart
 import com.deflatedpickle.heartdrops.item.Heart
 import kotlin.math.floor
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
