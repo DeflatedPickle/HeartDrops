@@ -1,0 +1,14 @@
+modLoader="kotlinfml"
+loaderVersion="[1,)"
+issueTrackerURL="https://github.com/DeflatedPickle/HeartDrops/issues"
+[[mods]]
+modId="heartdrops"
+version="${file.jarVersion}"
+displayName="HeartDrops"
+displayURL="https://github.com/DeflatedPickle/HeartDrops"
+logoFile="logo.png"
+credits="Mojang, Minecraft, Forge, FML, Tamaized, UPCraft"
+authors="DeflatedPickle"
+description='''
+A mod that adds hearts that may be picked up for extra health.
+'''

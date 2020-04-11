@@ -9,57 +9,40 @@ import com.deflatedpickle.heartdrops.capability.DropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.Item
 import com.deflatedpickle.heartdrops.item.CrystalHeart
-import com.deflatedpickle.heartdrops.item.GoldenHeart
 import com.deflatedpickle.heartdrops.item.Heart
-import kotlin.math.floor
-import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLiving
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.item.ItemEntity
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.entity.player.ServerPlayerEntity
+import net.minecraft.entity.projectile.ArrowEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.potion.PotionEffect
+import net.minecraft.potion.EffectInstance
 import net.minecraft.potion.PotionUtils
 import net.minecraftforge.client.event.ModelRegistryEvent
-import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.event.AttachCapabilitiesEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.entity.item.ItemTossEvent
 import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.registry.ForgeRegistries
+import net.minecraftforge.fml.config.ModConfig
+import net.minecraftforge.registries.ForgeRegistries
+import kotlin.math.floor
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 object ForgeEventHandler {
     @SubscribeEvent
-    fun onRegisterItem(event: RegistryEvent.Register<net.minecraft.item.Item>) {
-        event.registry.registerAll(
-                Item.heart,
-                Item.half_heart,
-                Item.golden_heart,
-                Item.crystal_heart
-        )
-    }
+    fun onModConfigEvent(event: ModConfig.ModConfigEvent) {
+        with(event.config) {
+            when (this.spec) {
+                HeartDrops.config.right -> {
 
-    @SubscribeEvent
-    fun onRegisterModel(event: ModelRegistryEvent) {
-        for (item in listOf(
-                Item.heart,
-                Item.half_heart,
-                Item.golden_heart,
-                Item.crystal_heart
-        )) {
-            ModelLoader.setCustomModelResourceLocation(
-                    item, 0,
-                    ModelResourceLocation(item.registryName, "inventory")
-            )
+                }
+            }
         }
     }
 
@@ -77,18 +60,9 @@ object ForgeEventHandler {
 
     @SubscribeEvent
     fun onItemTossEvent(event: ItemTossEvent) {
-        if (event.entityItem.item.item is CrystalHeart) {
-            // How helpful it is to tell us what's bad...
-            // Otherwise, you'd be stuck with good and bad effects
-            // I'm not writing more code to filter them out :^)
-            ForgeRegistries.POTIONS.valuesCollection.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
-                PotionUtils.appendEffects(event.entityItem.item, mutableListOf(PotionEffect(
-                        this[HeartDrops.random.nextInt(this.size)],
-                        // It should last for *enough* time to get use out of it
-                        // TODO: Make crystal heart effects further customisable
-                        HeartDrops.random.nextInt(20 * 20, 20 * 30)
-                )))
-            }
+        val itemStack = event.entityItem.item
+        if (itemStack.item is CrystalHeart) {
+            CrystalHeart.applyPotion(itemStack)
         }
     }
 
@@ -97,25 +71,25 @@ object ForgeEventHandler {
         var spawnItems = false
         val lootingLevel: Int
 
-        if (GeneralConfig.dropDifficulty != GeneralConfig.Difficulty.ALL &&
-                event.entity.world.difficulty.ordinal != GeneralConfig.dropDifficulty.ordinal) return
-        if (GeneralConfig.dropGameMode != GeneralConfig.GameMode.ALL &&
-                event.source.trueSource is EntityPlayer && ((event.source.trueSource as EntityPlayerMP).interactionManager.gameType.ordinal + 1) == GeneralConfig.dropGameMode.ordinal)
-        // They've chosen to install the mod... but never want hearts to drop
-        // Totally defeats the purpose of having it, but whatever
-            if (GeneralConfig.dropWhen == GeneralConfig.When.NEVER) return
-        if (!GeneralConfig.dropHardcore && event.entity.world.minecraftServer!!.isHardcore) return
-
         if (!event.entity.world.isRemote) {
+            if (GeneralConfig.dropDifficulty != GeneralConfig.Difficulty.ALL &&
+                    event.entity.world.difficulty.ordinal != GeneralConfig.dropDifficulty.ordinal) return
+            if (GeneralConfig.dropGameMode != GeneralConfig.GameMode.ALL &&
+                    event.source.trueSource is PlayerEntity && ((event.source.trueSource as ServerPlayerEntity).interactionManager.gameType.ordinal + 1) == GeneralConfig.dropGameMode.ordinal)
+            // They've chosen to install the mod... but never want hearts to drop
+            // Totally defeats the purpose of having it, but whatever
+                if (GeneralConfig.dropWhen == GeneralConfig.When.NEVER) return
+            if (!GeneralConfig.dropHardcore && event.entity.world.server!!.isHardcore) return
+
             val source = event.source.trueSource
 
             when (GeneralConfig.dropWhen) {
                 GeneralConfig.When.HURT -> {
-                    if (source is EntityLivingBase && source.health < source.maxHealth) {
+                    if (source is LivingEntity && source.health < source.maxHealth) {
                         spawnItems = true
-                    } else if (source is EntityArrow) {
-                        val entity = source.shootingEntity
-                        if (entity is EntityLiving) {
+                    } else if (source is ArrowEntity) {
+                        val entity = source.world.getPlayerByUuid(source.shootingEntity)
+                        if (entity is LivingEntity) {
                             if (entity.health < entity.maxHealth) {
                                 spawnItems = true
                             }
@@ -132,15 +106,14 @@ object ForgeEventHandler {
 
             var dropAmount = 0
 
-            val entity = event.entityLiving
-            val dropHearts = DropHearts.isCapable(entity)
-            if (dropHearts != null) {
-                if (dropHearts.doesDropHearts()) {
-                    dropAmount = dropHearts.dropAmount
+            val entity = event.entityLiving!!
+            with(entity.getCapability(DropHearts.Provider.CAPABILITY)) {
+                if (this.isPresent) {
+                    dropAmount = this.orElse(null).dropAmount
                 }
             }
 
-            val heartList = mutableListOf<EntityItem>()
+            val heartList = mutableListOf<ItemEntity>()
 
             var amount = 0
 
@@ -159,7 +132,7 @@ object ForgeEventHandler {
                             (GeneralConfig.dropAmountValue / 100f * event.entityLiving.maxHealth).toInt()
                         // Drops enough full hearts to fill to max - 1
                         GeneralConfig.DropAmount.UNTIL_FULL_HEALTH ->
-                            floor(((event.source.trueSource as EntityLivingBase).maxHealth - (event.source.trueSource as EntityLivingBase).health)).toInt()
+                            floor(((event.source.trueSource as LivingEntity).maxHealth - (event.source.trueSource as LivingEntity).health)).toInt()
                     }
                 }
                 // The user doesn't want any of those funky "only hurt" values
@@ -181,10 +154,10 @@ object ForgeEventHandler {
             var heartCount = 0
             // Takes the drop amount away from floor hearts
             if (GeneralConfig.deriveFromDropped) {
-                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as EntityLivingBase).entityBoundingBox.grow(10.0)) { it is EntityItem }
+                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as LivingEntity).boundingBox.grow(10.0)) { it is ItemEntity }
 
-                for (entity in entityList) {
-                    when (val item = (entity as EntityItem).item.item) {
+                for (loopEntity in entityList) {
+                    when (val item = (loopEntity as ItemEntity).item.item) {
                         is Heart -> {
                             heartCount += item.type.healsBy
                         }
@@ -217,7 +190,7 @@ object ForgeEventHandler {
                             heartList)
                 } else {
                     // Drops one if you only need half to fill
-                    if ((event.source.trueSource as EntityLivingBase).health + 1 == (event.source.trueSource as EntityLivingBase).maxHealth) {
+                    if ((event.source.trueSource as LivingEntity).health + 1 == (event.source.trueSource as LivingEntity).maxHealth) {
                         HeartType.HALF.drop(event,
                                 1,
                                 heartList)
@@ -243,7 +216,7 @@ object ForgeEventHandler {
             }
 
             for (i in heartList) {
-                entity.world.spawnEntity(i)
+                entity.world.addEntity(i)
             }
         }
     }
@@ -261,7 +234,7 @@ object ForgeEventHandler {
 
     @SubscribeEvent
     fun onAttachCapabilitiesEventEntity(event: AttachCapabilitiesEvent<Entity>) {
-        if (event.`object` !is EntityPlayer) {
+        if (event.`object` !is PlayerEntity) {
             event.addCapability(DropHearts.NAME, DropHearts.Provider())
         }
     }

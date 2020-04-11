@@ -2,17 +2,8 @@
 
 package com.deflatedpickle.heartdrops.item
 
-import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.HeartType
-import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
-import net.minecraft.util.ResourceLocation
+import net.minecraft.item.ItemGroup
 
-open class Heart(name: String, val type: HeartType) : Item() {
-    init {
-        this.registryName = ResourceLocation(Reference.MOD_ID, name)
-        this.translationKey = this.registryName.toString()
-        this.maxStackSize = 1
-        this.creativeTab = CreativeTabs.MISC
-    }
-}
+open class Heart(val type: HeartType) : Item(Properties().group(ItemGroup.MISC))

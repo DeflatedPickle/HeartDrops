@@ -3,23 +3,33 @@
 package com.deflatedpickle.heartdrops
 
 import com.deflatedpickle.heartdrops.capability.DropHearts
-import java.util.concurrent.ThreadLocalRandom
+import com.deflatedpickle.heartdrops.configs.GeneralConfig
+import com.deflatedpickle.heartdrops.init.Item
+import net.alexwells.kottle.FMLKotlinModLoadingContext
+import net.minecraftforge.common.ForgeConfigSpec
+import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.config.ModConfig
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import java.util.concurrent.ThreadLocalRandom
 
-@Mod(
-        modid = Reference.MOD_ID,
-        name = Reference.NAME,
-        version = Reference.VERSION,
-        acceptedMinecraftVersions = Reference.ACCEPTED_VERSIONS,
-        dependencies = Reference.DEPENDENCIES,
-        modLanguageAdapter = Reference.ADAPTER
-)
+@Mod(Reference.MOD_ID)
 object HeartDrops {
+    val eventBus = FMLKotlinModLoadingContext.get().modEventBus
+    val config = ForgeConfigSpec.Builder().configure<Any> { GeneralConfig() }
+
     val random: ThreadLocalRandom = ThreadLocalRandom.current()
 
-    @Mod.EventHandler
-    fun preInit(event: FMLPreInitializationEvent) {
-        DropHearts.register()
+    init {
+        Item.ITEMS.register(eventBus)
+
+        eventBus.addListener<FMLCommonSetupEvent> {
+            DropHearts.register()
+        }
+
+        ModLoadingContext.get().registerConfig(
+                ModConfig.Type.COMMON,
+                config.right
+        )
     }
 }

@@ -6,20 +6,21 @@ import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.IDropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import java.util.concurrent.Callable
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.nbt.NBTBase
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
+import net.minecraft.entity.LivingEntity
+import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.INBT
+import net.minecraft.util.Direction
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityInject
 import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.common.capabilities.ICapabilitySerializable
+import net.minecraftforge.common.util.LazyOptional
 
 object DropHearts {
     val NAME = ResourceLocation(Reference.MOD_ID, "drop_hearts")
 
-    fun isCapable(entity: EntityLivingBase): IDropHearts? = entity.getCapability(Provider.CAPABILITY, null)
+    fun isCapable(entity: LivingEntity): LazyOptional<IDropHearts> = entity.getCapability(Provider.CAPABILITY)
 
     class Implementation : IDropHearts {
         private var dropAmount = 1
@@ -44,9 +45,9 @@ object DropHearts {
     }
 
     class Storage : Capability.IStorage<IDropHearts> {
-        override fun readNBT(capability: Capability<IDropHearts>?, instance: IDropHearts?, side: EnumFacing?, nbt: NBTBase?) {
+        override fun readNBT(capability: Capability<IDropHearts>?, instance: IDropHearts?, side: Direction?, nbt: INBT?) {
             if (instance is Implementation) {
-                with(nbt as NBTTagCompound) {
+                with(nbt as CompoundNBT) {
                     with(nbt.getIntArray("int")) {
                         instance.dropAmount = this[0]
                         instance.dropRange = this[1]
@@ -58,11 +59,11 @@ object DropHearts {
             }
         }
 
-        override fun writeNBT(capability: Capability<IDropHearts>?, instance: IDropHearts?, side: EnumFacing?): NBTBase? {
+        override fun writeNBT(capability: Capability<IDropHearts>?, instance: IDropHearts?, side: Direction?): INBT? {
             if (instance != null) {
-                return NBTTagCompound().apply {
-                    this.setIntArray("int", intArrayOf(instance.dropAmount, instance.dropRange))
-                    this.setBoolean("dropHearts", instance.doesDropHearts())
+                return CompoundNBT().apply {
+                    this.putIntArray("int", intArrayOf(instance.dropAmount, instance.dropRange))
+                    this.putBoolean("dropHearts", instance.doesDropHearts())
                 }
             }
             return null
@@ -75,7 +76,7 @@ object DropHearts {
         }
     }
 
-    class Provider : ICapabilitySerializable<NBTBase> {
+    class Provider : ICapabilitySerializable<INBT> {
         companion object {
             @JvmStatic
             @CapabilityInject(IDropHearts::class)
@@ -84,11 +85,11 @@ object DropHearts {
 
         val INSTANCE = CAPABILITY.defaultInstance
 
-        override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean = capability == CAPABILITY
-        override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? = if (capability == CAPABILITY) CAPABILITY.cast(this.INSTANCE) else null
+        override fun <T : Any> getCapability(capability: Capability<T>, facing: Direction?): LazyOptional<T> =
+                CAPABILITY.orEmpty(CAPABILITY, LazyOptional.empty()) as LazyOptional<T>
 
-        override fun serializeNBT(): NBTBase = CAPABILITY.storage.writeNBT(CAPABILITY, this.INSTANCE, null)!!
-        override fun deserializeNBT(nbt: NBTBase) = CAPABILITY.storage.readNBT(CAPABILITY, this.INSTANCE, null, nbt)
+        override fun serializeNBT(): INBT = CAPABILITY.storage.writeNBT(CAPABILITY, this.INSTANCE, null)!!
+        override fun deserializeNBT(nbt: INBT) = CAPABILITY.storage.readNBT(CAPABILITY, this.INSTANCE, null, nbt)
     }
 
     fun register() {

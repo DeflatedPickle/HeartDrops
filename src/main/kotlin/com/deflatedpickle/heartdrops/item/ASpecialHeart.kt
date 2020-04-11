@@ -5,7 +5,7 @@ package com.deflatedpickle.heartdrops.item
 import com.deflatedpickle.heartdrops.api.HeartType
 import net.minecraft.item.ItemStack
 
-abstract class ASpecialHeart(name: String, type: HeartType) : Heart(name, type) {
+abstract class ASpecialHeart(type: HeartType) : Heart(type) {
     override fun hasEffect(stack: ItemStack): Boolean = true
 
     abstract fun doesDrop(): Boolean
