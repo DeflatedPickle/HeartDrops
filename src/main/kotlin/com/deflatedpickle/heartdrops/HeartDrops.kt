@@ -3,10 +3,10 @@
 package com.deflatedpickle.heartdrops
 
 import com.deflatedpickle.heartdrops.capability.DropHearts
-import com.deflatedpickle.heartdrops.configs.GeneralConfig
+import com.deflatedpickle.heartdrops.config.Config
+import com.deflatedpickle.heartdrops.config.GeneralConfig
 import com.deflatedpickle.heartdrops.init.Item
 import net.alexwells.kottle.FMLKotlinModLoadingContext
-import net.minecraftforge.common.ForgeConfigSpec
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
@@ -15,8 +15,8 @@ import java.util.concurrent.ThreadLocalRandom
 
 @Mod(Reference.MOD_ID)
 object HeartDrops {
+    val loadingContext = ModLoadingContext.get()
     val eventBus = FMLKotlinModLoadingContext.get().modEventBus
-    val config = ForgeConfigSpec.Builder().configure<Any> { GeneralConfig() }
 
     val random: ThreadLocalRandom = ThreadLocalRandom.current()
 
@@ -29,7 +29,8 @@ object HeartDrops {
 
         ModLoadingContext.get().registerConfig(
                 ModConfig.Type.COMMON,
-                config.right
+                Config.spec
         )
+        GeneralConfig.loadConfig()
     }
 }

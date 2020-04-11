@@ -6,10 +6,13 @@ import com.deflatedpickle.heartdrops.HeartDrops
 import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.HeartType
 import com.deflatedpickle.heartdrops.capability.DropHearts
-import com.deflatedpickle.heartdrops.configs.GeneralConfig
-import com.deflatedpickle.heartdrops.init.Item
+import com.deflatedpickle.heartdrops.config.Config
 import com.deflatedpickle.heartdrops.item.CrystalHeart
 import com.deflatedpickle.heartdrops.item.Heart
+import com.deflatedpickle.heartdrops.util.Difficulty
+import com.deflatedpickle.heartdrops.util.DropAmount
+import com.deflatedpickle.heartdrops.util.GameMode
+import com.deflatedpickle.heartdrops.util.When
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
@@ -19,33 +22,17 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.entity.projectile.ArrowEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.potion.EffectInstance
-import net.minecraft.potion.PotionUtils
-import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.event.AttachCapabilitiesEvent
-import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.entity.item.ItemTossEvent
 import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
-import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.floor
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 object ForgeEventHandler {
-    @SubscribeEvent
-    fun onModConfigEvent(event: ModConfig.ModConfigEvent) {
-        with(event.config) {
-            when (this.spec) {
-                HeartDrops.config.right -> {
-
-                }
-            }
-        }
-    }
-
     @SubscribeEvent
     fun onEntityItemPickupEvent(event: EntityItemPickupEvent) {
         if (!event.entity.world.isRemote) {
@@ -72,19 +59,19 @@ object ForgeEventHandler {
         val lootingLevel: Int
 
         if (!event.entity.world.isRemote) {
-            if (GeneralConfig.dropDifficulty != GeneralConfig.Difficulty.ALL &&
-                    event.entity.world.difficulty.ordinal != GeneralConfig.dropDifficulty.ordinal) return
-            if (GeneralConfig.dropGameMode != GeneralConfig.GameMode.ALL &&
-                    event.source.trueSource is PlayerEntity && ((event.source.trueSource as ServerPlayerEntity).interactionManager.gameType.ordinal + 1) == GeneralConfig.dropGameMode.ordinal)
+            if (Config.dropDifficulty.get() != Difficulty.ALL &&
+                    event.entity.world.difficulty.ordinal != Config.dropDifficulty.get().ordinal) return
+            if (Config.dropGameMode.get() != GameMode.ALL &&
+                    event.source.trueSource is PlayerEntity && ((event.source.trueSource as ServerPlayerEntity).interactionManager.gameType.ordinal + 1) == Config.dropGameMode.get().ordinal)
             // They've chosen to install the mod... but never want hearts to drop
             // Totally defeats the purpose of having it, but whatever
-                if (GeneralConfig.dropWhen == GeneralConfig.When.NEVER) return
-            if (!GeneralConfig.dropHardcore && event.entity.world.server!!.isHardcore) return
+                if (Config.dropWhen.get() == When.NEVER) return
+            if (!Config.dropHardcore.get() && event.entity.world.server!!.isHardcore) return
 
             val source = event.source.trueSource
 
-            when (GeneralConfig.dropWhen) {
-                GeneralConfig.When.HURT -> {
+            when (Config.dropWhen.get()!!) {
+                When.HURT -> {
                     if (source is LivingEntity && source.health < source.maxHealth) {
                         spawnItems = true
                     } else if (source is ArrowEntity) {
@@ -96,8 +83,8 @@ object ForgeEventHandler {
                         }
                     }
                 }
-                GeneralConfig.When.ALWAYS -> spawnItems = true
-                GeneralConfig.When.NEVER -> return
+                When.ALWAYS -> spawnItems = true
+                When.NEVER -> return
             }
 
             if (!spawnItems) return
@@ -118,42 +105,42 @@ object ForgeEventHandler {
             var amount = 0
 
             // Deals with red hearts
-            when (GeneralConfig.dropWhen) {
-                GeneralConfig.When.HURT -> {
-                    amount = when (GeneralConfig.dropAmount) {
+            when (Config.dropWhen.get()!!) {
+                When.HURT -> {
+                    amount = when (Config.dropAmount.get()!!) {
                         // User specified amount
-                        GeneralConfig.DropAmount.SPECIFIC ->
-                            GeneralConfig.dropAmountValue
+                        DropAmount.SPECIFIC ->
+                            Config.dropAmountValue.get()
                         // Random chance using a user specified max amount
-                        GeneralConfig.DropAmount.CHANCE ->
-                            HeartDrops.random.nextInt(GeneralConfig.dropAmountValue)
+                        DropAmount.CHANCE ->
+                            HeartDrops.random.nextInt(Config.dropAmountValue.get())
                         // Uses a user input for a percentage of the mob health
-                        GeneralConfig.DropAmount.PERCENTAGE_OF_MOB_HEALTH ->
-                            (GeneralConfig.dropAmountValue / 100f * event.entityLiving.maxHealth).toInt()
+                        DropAmount.PERCENTAGE_OF_MOB_HEALTH ->
+                            (Config.dropAmountValue.get() / 100f * event.entityLiving.maxHealth).toInt()
                         // Drops enough full hearts to fill to max - 1
-                        GeneralConfig.DropAmount.UNTIL_FULL_HEALTH ->
+                        DropAmount.UNTIL_FULL_HEALTH ->
                             floor(((event.source.trueSource as LivingEntity).maxHealth - (event.source.trueSource as LivingEntity).health)).toInt()
                     }
                 }
                 // The user doesn't want any of those funky "only hurt" values
                 // Give 'em hearts all the time
-                GeneralConfig.When.ALWAYS ->
+                When.ALWAYS ->
                     HeartType.NORMAL.drop(event, 1, heartList)
                 // They don't want hearts at all! Can you believe that?! ;~;
-                GeneralConfig.When.NEVER -> {
+                When.NEVER -> {
                 }
             }
 
             // Only after all those calculations, shall we cancel it if they don't want them
             // TODO: Sort this out
-            if (!GeneralConfig.redHeart.drop) {
+            if (!Config.redHeartDrop.get()) {
                 amount = 0
                 heartList.clear()
             }
 
             var heartCount = 0
             // Takes the drop amount away from floor hearts
-            if (GeneralConfig.deriveFromDropped) {
+            if (Config.deriveFromDropped.get()) {
                 val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as LivingEntity).boundingBox.grow(10.0)) { it is ItemEntity }
 
                 for (loopEntity in entityList) {
@@ -166,7 +153,7 @@ object ForgeEventHandler {
             }
 
             // Caps the amount at the health
-            if (GeneralConfig.capAtHealth) {
+            if (Config.capAtHealth.get()) {
                 amount -= heartCount
             }
 
@@ -182,9 +169,9 @@ object ForgeEventHandler {
             }
 
             // Drops enough half-hearts to fill
-            if (GeneralConfig.dropHalf) {
+            if (Config.dropHalf.get()) {
                 // Uses dropped hearts
-                if (GeneralConfig.deriveFromDropped) {
+                if (Config.deriveFromDropped.get()) {
                     HeartType.HALF.drop(event,
                             cache,
                             heartList)
@@ -200,15 +187,15 @@ object ForgeEventHandler {
 
             // Deals with gold and crystal hearts
             for (i in 0..dropAmount * (lootingLevel + 1)) {
-                if (GeneralConfig.goldHeart.drop) {
-                    val bound = (GeneralConfig.goldHeart.chance + GeneralConfig.goldHeart.lootingMultiplier - ((lootingLevel + 1) * GeneralConfig.goldHeart.lootingMultiplier)) / (lootingLevel + 1)
+                if (Config.goldHeartDrop.get()) {
+                    val bound = (Config.goldHeartChance.get() + Config.goldHeartLootingMultiplier.get() - ((lootingLevel + 1) * Config.goldHeartLootingMultiplier.get())) / (lootingLevel + 1)
                     if (HeartDrops.random.nextInt(0, bound) == 0) {
                         HeartType.GOLD.drop(event, 1, heartList)
                     }
                 }
 
-                if (GeneralConfig.crystalHeart.drop) {
-                    val bound = (GeneralConfig.crystalHeart.chance + GeneralConfig.crystalHeart.lootingMultiplier - ((lootingLevel + 1) * GeneralConfig.crystalHeart.lootingMultiplier)) / (lootingLevel + 1)
+                if (Config.crystalHeartDrop.get()) {
+                    val bound = (Config.crystalHeartChance.get() + Config.crystalHeartLootingMultiplier.get() - ((lootingLevel + 1) * Config.crystalHeartLootingMultiplier.get())) / (lootingLevel + 1)
                     if (HeartDrops.random.nextInt(0, bound) == 0) {
                         HeartType.CRYSTAL.drop(event, 1, heartList)
                     }

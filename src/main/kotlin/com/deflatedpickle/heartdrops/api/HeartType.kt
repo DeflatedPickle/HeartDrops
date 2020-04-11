@@ -2,16 +2,13 @@
 
 package com.deflatedpickle.heartdrops.api
 
-import com.deflatedpickle.heartdrops.HeartDrops
 import com.deflatedpickle.heartdrops.init.Item
 import com.deflatedpickle.heartdrops.item.CrystalHeart
 import net.minecraft.entity.item.ItemEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.potion.EffectInstance
 import net.minecraft.potion.PotionUtils
 import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
-import net.minecraftforge.registries.ForgeRegistries
 
 enum class HeartType(val healsBy: Int) {
     HALF(1) {

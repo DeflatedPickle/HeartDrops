@@ -17,11 +17,11 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'kotlin'
 
-version = "1.13.2-3.0.0.2"
+version = "1.14.4-3.0.0.2"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = 'heartdrops'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = "1.8"
 
 minecraft {
     mappings channel: 'snapshot', version: '20190719-1.14.3'

@@ -4,17 +4,17 @@ package com.deflatedpickle.heartdrops.item
 
 import com.deflatedpickle.heartdrops.HeartDrops
 import com.deflatedpickle.heartdrops.api.HeartType
-import com.deflatedpickle.heartdrops.configs.GeneralConfig
+import com.deflatedpickle.heartdrops.config.Config
+import com.deflatedpickle.heartdrops.config.GeneralConfig
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.EffectInstance
 import net.minecraft.potion.PotionUtils
-import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.registries.ForgeRegistries
 
 class CrystalHeart : ASpecialHeart(HeartType.CRYSTAL) {
-    override fun doesDrop(): Boolean = GeneralConfig.crystalHeart.drop
-    override fun dropChance(): Int = GeneralConfig.crystalHeart.chance
-    override fun dropMultiplier(): Int = GeneralConfig.crystalHeart.lootingMultiplier
+    override fun doesDrop(): Boolean = Config.crystalHeartDrop.get()
+    override fun dropChance(): Int = Config.crystalHeartChance.get()
+    override fun dropMultiplier(): Int = Config.crystalHeartLootingMultiplier.get()
 
     companion object {
         fun applyPotion(itemStack: ItemStack): ItemStack {

@@ -4,7 +4,8 @@ package com.deflatedpickle.heartdrops.capability
 
 import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.IDropHearts
-import com.deflatedpickle.heartdrops.configs.GeneralConfig
+import com.deflatedpickle.heartdrops.config.Config
+import com.deflatedpickle.heartdrops.config.GeneralConfig
 import java.util.concurrent.Callable
 import net.minecraft.entity.LivingEntity
 import net.minecraft.nbt.CompoundNBT
@@ -24,7 +25,7 @@ object DropHearts {
 
     class Implementation : IDropHearts {
         private var dropAmount = 1
-        private var dropRange = GeneralConfig.dropRange
+        private var dropRange = Config.dropRange.get()
         private var dropHearts = true
 
         override fun getDropAmount(): Int = dropAmount
