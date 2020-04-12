@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 enum class HeartType(val healsBy: Int) {
     HALF(1) {
         override fun drop(event: LivingDropsEvent, amount: Int, heartList: MutableList<ItemEntity>): ItemStack =
-            dropAtPlayer(event, ItemStack(Item.half_heart.get()!!), heartList)
+            dropAtEntity(event, ItemStack(Item.half_heart.get()!!), heartList)
 
         override fun collect(event: EntityItemPickupEvent) {
             if (event.entityLiving.health + healsBy <= event.entityLiving.maxHealth) {
@@ -25,7 +25,7 @@ enum class HeartType(val healsBy: Int) {
     },
     NORMAL(2) {
         override fun drop(event: LivingDropsEvent, amount: Int, heartList: MutableList<ItemEntity>): ItemStack =
-            dropAtPlayer(event, ItemStack(Item.heart.get()!!), heartList)
+            dropAtEntity(event, ItemStack(Item.heart.get()!!), heartList)
 
         override fun collect(event: EntityItemPickupEvent) {
             if (event.entityLiving.health + healsBy <= event.entityLiving.maxHealth) {
@@ -37,7 +37,7 @@ enum class HeartType(val healsBy: Int) {
     },
     GOLD(0) {
         override fun drop(event: LivingDropsEvent, amount: Int, heartList: MutableList<ItemEntity>): ItemStack =
-            dropAtPlayer(event, ItemStack(Item.golden_heart.get()!!), heartList)
+            dropAtEntity(event, ItemStack(Item.golden_heart.get()!!), heartList)
 
         override fun collect(event: EntityItemPickupEvent) {
             event.player.absorptionAmount = event.player.absorptionAmount + 2
@@ -45,7 +45,7 @@ enum class HeartType(val healsBy: Int) {
     },
     CRYSTAL(0) {
         override fun drop(event: LivingDropsEvent, amount: Int, heartList: MutableList<ItemEntity>): ItemStack =
-            dropAtPlayer(event, CrystalHeart.applyPotion(ItemStack(Item.crystal_heart.get()!!)), heartList)
+            dropAtEntity(event, CrystalHeart.applyPotion(ItemStack(Item.crystal_heart.get()!!)), heartList)
 
         override fun collect(event: EntityItemPickupEvent) {
             for (i in PotionUtils.getEffectsFromStack(event.item.item)) {
@@ -58,7 +58,7 @@ enum class HeartType(val healsBy: Int) {
     abstract fun collect(event: EntityItemPickupEvent)
 
     companion object {
-        fun dropAtPlayer(event: LivingDropsEvent, stack: ItemStack, heartList: MutableList<ItemEntity>): ItemStack {
+        fun dropAtEntity(event: LivingDropsEvent, stack: ItemStack, heartList: MutableList<ItemEntity>): ItemStack {
             heartList.add(ItemEntity(
                     event.entity.world,
                     event.entity.posX,

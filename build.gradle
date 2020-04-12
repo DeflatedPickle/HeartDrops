@@ -11,13 +11,15 @@ buildscript {
             exclude group: 'trove', module: 'trove'
         }
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.26.1"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'kotlin'
+apply plugin: "com.diffplug.gradle.spotless"
 
-version = "1.15.1-3.0.0.2"
+version = "1.15.1-3.0.0.3"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = 'heartdrops'
 
@@ -79,16 +81,26 @@ dependencies {
     implementation "kottle:Kottle:$kottleVersion"
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
+spotless {
+    java {
+        googleJavaFormat()
+
+        licenseHeader '/* Copyright (c) $YEAR DeflatedPickle under the MIT license */\n\n'
+    }
+
+    kotlin {
+        ktlint()
+
+        licenseHeader '/* Copyright (c) $YEAR DeflatedPickle under the MIT license */\n\n'
+    }
+}
+
 jar {
     manifest {
         attributes([
-                "Specification-Title": "examplemod",
-                "Specification-Vendor": "examplemodsareus",
-                "Specification-Version": "1", // We are version 1 of ourselves
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"examplemodsareus",
+                "Implementation-Vendor" :"DeflatedPickle",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

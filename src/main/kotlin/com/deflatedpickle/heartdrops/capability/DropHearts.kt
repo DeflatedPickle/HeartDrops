@@ -5,7 +5,6 @@ package com.deflatedpickle.heartdrops.capability
 import com.deflatedpickle.heartdrops.Reference
 import com.deflatedpickle.heartdrops.api.IDropHearts
 import com.deflatedpickle.heartdrops.config.Config
-import com.deflatedpickle.heartdrops.config.GeneralConfig
 import java.util.concurrent.Callable
 import net.minecraft.entity.LivingEntity
 import net.minecraft.nbt.CompoundNBT

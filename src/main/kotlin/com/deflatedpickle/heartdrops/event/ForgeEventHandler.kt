@@ -28,7 +28,6 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.config.ModConfig
 import kotlin.math.floor
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)

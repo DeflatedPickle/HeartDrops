@@ -4,17 +4,15 @@ package com.deflatedpickle.heartdrops.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.jetbrains.annotations.NotNull;
 
 // @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 // @Config(modid = Reference.MOD_ID, name = Reference.CONFIG_GENERAL)
 // @Config.LangKey("config.heartdrops.general")
 public class GeneralConfig {
   public static void loadConfig() {
-    CommentedFileConfig configData = CommentedFileConfig.builder(FMLPaths.CONFIGDIR.get().resolve("heartdrops.toml"))
+    CommentedFileConfig configData =
+        CommentedFileConfig.builder(FMLPaths.CONFIGDIR.get().resolve("heartdrops.toml"))
             .sync()
             .autosave()
             .writingMode(WritingMode.REPLACE)
@@ -26,7 +24,7 @@ public class GeneralConfig {
 
   // public static Integer dropRange = 1;
 
-/*  public enum DropAmount {
+  /*  public enum DropAmount {
     SPECIFIC,
     CHANCE,
     UNTIL_FULL_HEALTH,
@@ -36,7 +34,6 @@ public class GeneralConfig {
   // public static @NotNull DropAmount dropAmount = DropAmount.UNTIL_FULL_HEALTH;
 
   // public static @NotNull Integer dropAmountValue = 20;
-
 
   // public static @NotNull Boolean deriveFromDropped = true;
 
@@ -87,11 +84,11 @@ public class GeneralConfig {
   // public static @NotNull GoldHeart goldHeart = new GoldHeart();
 
   // public static class GoldHeart {
-    // public Boolean drop = true;
+  // public Boolean drop = true;
 
-    // public Integer chance = 1;
+  // public Integer chance = 1;
 
-    // public Integer lootingMultiplier = 5;
+  // public Integer lootingMultiplier = 5;
   // }
 
   // @Config.Comment("Settings for crystal hearts")
@@ -99,16 +96,16 @@ public class GeneralConfig {
   // public static @NotNull CrystalHeart crystalHeart = new CrystalHeart();
 
   // public static class CrystalHeart {
-    // @Config.Comment("Whether or not crystal hearts will drop")
-    // @Config.LangKey("config.heartdrops.dropCrystalHearts")
-    // public Boolean drop = true;
+  // @Config.Comment("Whether or not crystal hearts will drop")
+  // @Config.LangKey("config.heartdrops.dropCrystalHearts")
+  // public Boolean drop = true;
 
-    // @Config.Comment("The chance for a crystal heart to drop")
-    // @Config.LangKey("config.heartdrops.crystalHeartChance")
-    // public Integer chance = 1;
+  // @Config.Comment("The chance for a crystal heart to drop")
+  // @Config.LangKey("config.heartdrops.crystalHeartChance")
+  // public Integer chance = 1;
 
-    // @Config.Comment("A multiplier that increases your chance to get a crystal heart")
-    // @Config.LangKey("config.heartdrops.crystalHeartLootingMultiplier")
-    // public Integer lootingMultiplier = 3;
+  // @Config.Comment("A multiplier that increases your chance to get a crystal heart")
+  // @Config.LangKey("config.heartdrops.crystalHeartLootingMultiplier")
+  // public Integer lootingMultiplier = 3;
   // }
 }
