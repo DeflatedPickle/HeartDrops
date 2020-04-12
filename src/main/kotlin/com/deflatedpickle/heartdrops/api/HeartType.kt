@@ -48,7 +48,7 @@ enum class HeartType(val healsBy: Int) {
                 dropAtPlayer(event, CrystalHeart.applyPotion(ItemStack(Item.crystal_heart)), heartList)
 
         override fun collect(event: EntityItemPickupEvent) {
-            for (i in PotionUtils.getEffectsFromStack(event.item.item)) {
+            for (i in PotionUtils.getEffectsFromStack(event.item.entityItem)) {
                 event.entityLiving.addPotionEffect(i)
             }
         }

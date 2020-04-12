@@ -20,7 +20,7 @@ class CrystalHeart : ASpecialHeart("crystal_heart", HeartType.CRYSTAL) {
             // How helpful it is to tell us what's bad...
             // Otherwise, you'd be stuck with good and bad effects
             // I'm not writing more code to filter them out :^)
-            ForgeRegistries.POTIONS.valuesCollection.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
+            ForgeRegistries.POTIONS.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
                 PotionUtils.appendEffects(itemStack, mutableListOf(PotionEffect(
                         this[HeartDrops.random.nextInt(this.size)],
                         // It should last for *enough* time to get use out of it

@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation
 open class Heart(name: String, val type: HeartType) : Item() {
     init {
         this.registryName = ResourceLocation(Reference.MOD_ID, name)
-        this.translationKey = this.registryName.toString()
+        this.unlocalizedName = this.registryName.toString()
         this.maxStackSize = 1
         this.creativeTab = CreativeTabs.MISC
     }

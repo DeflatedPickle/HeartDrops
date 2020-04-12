@@ -6,7 +6,7 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.26.1"
     }
@@ -17,15 +17,15 @@ apply plugin: "com.diffplug.gradle.spotless"
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 // Versions follow this format: MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
-version = "1.12.2-3.0.0.3"
+version = "1.11.2-3.0.0.3"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = "heartdrops"
 
 minecraft {
-    version = "1.12.2-14.23.5.2847"
+    version = "1.11.2-13.20.1.2588"
     runDir = "run"
 
-    mappings = "snapshot_20180814"
+    mappings = "snapshot_20161220"
 }
 
 repositories {

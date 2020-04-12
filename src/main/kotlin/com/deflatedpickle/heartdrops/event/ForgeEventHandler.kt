@@ -22,8 +22,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemStack
-import net.minecraft.potion.PotionEffect
-import net.minecraft.potion.PotionUtils
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.event.AttachCapabilitiesEvent
@@ -33,7 +31,6 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.registry.ForgeRegistries
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 object ForgeEventHandler {
@@ -65,7 +62,7 @@ object ForgeEventHandler {
     @SubscribeEvent
     fun onEntityItemPickupEvent(event: EntityItemPickupEvent) {
         if (!event.entity.world.isRemote) {
-            val itemStack = event.item.item
+            val itemStack = event.item.entityItem
             val item = itemStack.item
 
             if (item is Heart) {
@@ -76,18 +73,8 @@ object ForgeEventHandler {
 
     @SubscribeEvent
     fun onItemTossEvent(event: ItemTossEvent) {
-        if (event.entityItem.item.item is CrystalHeart) {
-            // How helpful it is to tell us what's bad...
-            // Otherwise, you'd be stuck with good and bad effects
-            // I'm not writing more code to filter them out :^)
-            ForgeRegistries.POTIONS.valuesCollection.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
-                PotionUtils.appendEffects(event.entityItem.item, mutableListOf(PotionEffect(
-                        this[HeartDrops.random.nextInt(this.size)],
-                        // It should last for *enough* time to get use out of it
-                        // TODO: Make crystal heart effects further customisable
-                        HeartDrops.random.nextInt(20 * 20, 20 * 30)
-                )))
-            }
+        if (event.entityItem.entityItem.item is CrystalHeart) {
+            CrystalHeart.applyPotion(event.entityItem.entityItem)
         }
     }
 
@@ -99,14 +86,14 @@ object ForgeEventHandler {
         if (GeneralConfig.dropDifficulty != GeneralConfig.Difficulty.ALL &&
                 event.entity.world.difficulty.ordinal != GeneralConfig.dropDifficulty.ordinal) return
         if (GeneralConfig.dropGameMode != GeneralConfig.GameMode.ALL &&
-                event.source.trueSource is EntityPlayer && ((event.source.trueSource as EntityPlayerMP).interactionManager.gameType.ordinal + 1) == GeneralConfig.dropGameMode.ordinal)
+                event.source.sourceOfDamage is EntityPlayer && ((event.source.sourceOfDamage as EntityPlayerMP).interactionManager.gameType.ordinal + 1) == GeneralConfig.dropGameMode.ordinal)
         // They've chosen to install the mod... but never want hearts to drop
         // Totally defeats the purpose of having it, but whatever
             if (GeneralConfig.dropWhen == GeneralConfig.When.NEVER) return
         if (!GeneralConfig.dropHardcore && event.entity.world.minecraftServer!!.isHardcore) return
 
         if (!event.entity.world.isRemote) {
-            val source = event.source.trueSource
+            val source = event.source.sourceOfDamage
 
             when (GeneralConfig.dropWhen) {
                 GeneralConfig.When.HURT -> {
@@ -158,7 +145,7 @@ object ForgeEventHandler {
                             (GeneralConfig.dropAmountValue / 100f * event.entityLiving.maxHealth).toInt()
                         // Drops enough full hearts to fill to max - 1
                         GeneralConfig.DropAmount.UNTIL_FULL_HEALTH ->
-                            floor(((event.source.trueSource as EntityLivingBase).maxHealth - (event.source.trueSource as EntityLivingBase).health)).toInt()
+                            floor(((event.source.sourceOfDamage as EntityLivingBase).maxHealth - (event.source.sourceOfDamage as EntityLivingBase).health)).toInt()
                     }
                 }
                 // The user doesn't want any of those funky "only hurt" values
@@ -180,10 +167,10 @@ object ForgeEventHandler {
             var heartCount = 0
             // Takes the drop amount away from floor hearts
             if (GeneralConfig.deriveFromDropped) {
-                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as EntityLivingBase).entityBoundingBox.grow(10.0)) { it is EntityItem }
+                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.sourceOfDamage, (event.source.sourceOfDamage as EntityLivingBase).entityBoundingBox.expand(10.0, 10.0, 10.0)) { it is EntityItem }
 
                 for (entity in entityList) {
-                    when (val item = (entity as EntityItem).item.item) {
+                    when (val item = (entity as EntityItem).entityItem.item) {
                         is Heart -> {
                             heartCount += item.type.healsBy
                         }
@@ -197,7 +184,7 @@ object ForgeEventHandler {
             }
 
             var cache = 0
-            if (event.source.trueSource != null) {
+            if (event.source.sourceOfDamage != null) {
                 // Drops all the hearts, stepping by 2
                 for (i in 1..amount step 2) {
                     HeartType.NORMAL.drop(event,
@@ -216,7 +203,7 @@ object ForgeEventHandler {
                             heartList)
                 } else {
                     // Drops one if you only need half to fill
-                    if ((event.source.trueSource as EntityLivingBase).health + 1 == (event.source.trueSource as EntityLivingBase).maxHealth) {
+                    if ((event.source.sourceOfDamage as EntityLivingBase).health + 1 == (event.source.sourceOfDamage as EntityLivingBase).maxHealth) {
                         HeartType.HALF.drop(event,
                                 1,
                                 heartList)
