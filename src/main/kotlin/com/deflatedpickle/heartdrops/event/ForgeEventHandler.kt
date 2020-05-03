@@ -13,6 +13,7 @@ import com.deflatedpickle.heartdrops.util.Difficulty
 import com.deflatedpickle.heartdrops.util.DropAmount
 import com.deflatedpickle.heartdrops.util.GameMode
 import com.deflatedpickle.heartdrops.util.When
+import kotlin.math.floor
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
@@ -28,7 +29,6 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import kotlin.math.floor
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 object ForgeEventHandler {

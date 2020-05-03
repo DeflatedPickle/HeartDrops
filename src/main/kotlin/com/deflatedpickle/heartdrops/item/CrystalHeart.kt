@@ -5,7 +5,6 @@ package com.deflatedpickle.heartdrops.item
 import com.deflatedpickle.heartdrops.HeartDrops
 import com.deflatedpickle.heartdrops.api.HeartType
 import com.deflatedpickle.heartdrops.config.Config
-import com.deflatedpickle.heartdrops.config.GeneralConfig
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.EffectInstance
 import net.minecraft.potion.PotionUtils

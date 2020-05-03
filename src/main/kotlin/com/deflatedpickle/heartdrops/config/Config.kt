@@ -1,3 +1,5 @@
+/* Copyright (c) 2020 DeflatedPickle under the MIT license */
+
 package com.deflatedpickle.heartdrops.config
 
 import com.deflatedpickle.heartdrops.util.Difficulty
@@ -23,7 +25,7 @@ object Config {
     var dropGameMode: ForgeConfigSpec.EnumValue<GameMode>
 
     var redHeartDrop: ForgeConfigSpec.BooleanValue
-    
+
     var goldHeartDrop: ForgeConfigSpec.BooleanValue
     var goldHeartChance: ForgeConfigSpec.IntValue
     var goldHeartLootingMultiplier: ForgeConfigSpec.IntValue
@@ -50,12 +52,12 @@ object Config {
         // dropAmount
         dropAmountValue = builder
                 .comment(
-                     "The value used for the drop amount",
-                     "SPECIFIC = A specific value to drop",
-                     "CHANCE = The upper bound of a random chance",
-                     "UNTIL_FULL_HEALTH = Nothing",
-                     "PERCENTAGE_OF_MOB_HEALTH = The percentage of the health"
-                    )
+                        "The value used for the drop amount",
+                        "SPECIFIC = A specific value to drop",
+                        "CHANCE = The upper bound of a random chance",
+                        "UNTIL_FULL_HEALTH = Nothing",
+                        "PERCENTAGE_OF_MOB_HEALTH = The percentage of the health"
+                )
                 .translation("config.heartdrops.dromAmountValue")
                 .defineInRange("dropAmount", 20, 1, 100)
 
@@ -100,7 +102,7 @@ object Config {
                 .comment("Changes the game mode hearts drop on")
                 .translation("config.heartdrops.dropGamemode")
                 .defineEnum("dropGamemode", GameMode.ALL)
-        
+
         builder.pop()
 
         // redHeart
@@ -111,9 +113,9 @@ object Config {
                 .comment("Whether red full and half hearts will drop")
                 .translation("config.heartdrops.dropRedHearts")
                 .define("redHeartDrop", true)
-        
+
         builder.pop()
-        
+
         // goldHeart
         builder.comment("Gold Hearts").push("goldHeartCategory")
 
@@ -122,19 +124,19 @@ object Config {
                 .comment("Whether or not golden hearts will drop")
                 .translation("config.heartdrops.dropGoldHearts")
                 .define("goldHeartDrop", true)
-        
+
         // goldHeartChance
         goldHeartChance = builder
                 .comment("The chance for a golden heart to drop")
                 .translation("config.heartdrops.goldHeartChance")
                 .defineInRange("goldHeartChance", 50, 1, Int.MAX_VALUE)
-        
+
         // goldHeartLootingMultiplier
         goldHeartLootingMultiplier = builder
                 .comment("A multiplier that increases your chance to get a golden heart")
                 .translation("config.heartdrops.goldHeartLootingMultiplier")
                 .defineInRange("goldHeartLootingMultiplier", 5, 1, Int.MAX_VALUE)
-        
+
         builder.pop()
 
         // crystalHeart

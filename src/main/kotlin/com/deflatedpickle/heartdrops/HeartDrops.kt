@@ -6,12 +6,12 @@ import com.deflatedpickle.heartdrops.capability.DropHearts
 import com.deflatedpickle.heartdrops.config.Config
 import com.deflatedpickle.heartdrops.config.GeneralConfig
 import com.deflatedpickle.heartdrops.init.Item
+import java.util.concurrent.ThreadLocalRandom
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import java.util.concurrent.ThreadLocalRandom
 
 @Mod(Reference.MOD_ID)
 object HeartDrops {
