@@ -19,7 +19,7 @@ apply plugin: 'idea'
 apply plugin: 'kotlin'
 apply plugin: "com.diffplug.gradle.spotless"
 
-version = "1.15.2-3.0.0.3"
+version = "1.15.2-3.0.0.4"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = 'heartdrops'
 
