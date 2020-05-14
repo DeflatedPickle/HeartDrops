@@ -23,8 +23,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemStack
-import net.minecraft.potion.PotionEffect
-import net.minecraft.potion.PotionUtils
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.event.AttachCapabilitiesEvent
@@ -34,7 +32,6 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.registry.ForgeRegistries
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 object ForgeEventHandler {
@@ -158,8 +155,15 @@ object ForgeEventHandler {
                         GeneralConfig.DropAmount.PERCENTAGE_OF_MOB_HEALTH ->
                             (GeneralConfig.dropAmountValue / 100f * event.entityLiving.maxHealth).toInt()
                         // Drops enough full hearts to fill to max - 1
-                        GeneralConfig.DropAmount.UNTIL_FULL_HEALTH ->
-                            floor(((event.source.trueSource as EntityLivingBase).maxHealth - (event.source.trueSource as EntityLivingBase).health)).toInt()
+                        GeneralConfig.DropAmount.UNTIL_FULL_HEALTH -> {
+                            val trueSource = event.source.trueSource
+
+                            if (trueSource is EntityLivingBase) {
+                                floor((trueSource.maxHealth - trueSource.health)).toInt()
+                            } else {
+                                0
+                            }
+                        }
                     }
                 }
                 // The user doesn't want any of those funky "only hurt" values
@@ -181,12 +185,19 @@ object ForgeEventHandler {
             var heartCount = 0
             // Takes the drop amount away from floor hearts
             if (GeneralConfig.deriveFromDropped) {
-                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as EntityLivingBase).entityBoundingBox.grow(10.0)) { it is EntityItem }
+                val trueSource = event.source.trueSource
 
-                for (entity in entityList) {
-                    when (val item = (entity as EntityItem).item.item) {
-                        is Heart -> {
-                            heartCount += item.type.healsBy
+                if (trueSource is EntityLivingBase) {
+                    val entityList = event.entity.world.getEntitiesInAABBexcluding(
+                            trueSource,
+                            trueSource.entityBoundingBox.grow(10.0)
+                    ) { it is EntityItem }
+
+                    for (entity in entityList) {
+                        when (val item = (entity as EntityItem).item.item) {
+                            is Heart -> {
+                                heartCount += item.type.healsBy
+                            }
                         }
                     }
                 }
@@ -217,7 +228,9 @@ object ForgeEventHandler {
                             heartList)
                 } else {
                     // Drops one if you only need half to fill
-                    if ((event.source.trueSource as EntityLivingBase).health + 1 == (event.source.trueSource as EntityLivingBase).maxHealth) {
+                    val trueSource = event.source.trueSource
+                    if (trueSource is EntityLivingBase &&
+                            trueSource.health + 1 == trueSource.maxHealth) {
                         HeartType.HALF.drop(event,
                                 1,
                                 heartList)
