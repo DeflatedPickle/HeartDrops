@@ -117,8 +117,15 @@ object ForgeEventHandler {
                         DropAmount.PERCENTAGE_OF_MOB_HEALTH ->
                             (Config.dropAmountValue.get() / 100f * event.entityLiving.maxHealth).toInt()
                         // Drops enough full hearts to fill to max - 1
-                        DropAmount.UNTIL_FULL_HEALTH ->
-                            floor(((event.source.trueSource as LivingEntity).maxHealth - (event.source.trueSource as LivingEntity).health)).toInt()
+                        DropAmount.UNTIL_FULL_HEALTH -> {
+                            val trueSource = event.source.trueSource
+
+                            if (trueSource is LivingEntity) {
+                                floor((trueSource.maxHealth - trueSource.health)).toInt()
+                            } else {
+                                0
+                            }
+                        }
                     }
                 }
                 // The user doesn't want any of those funky "only hurt" values
@@ -140,12 +147,19 @@ object ForgeEventHandler {
             var heartCount = 0
             // Takes the drop amount away from floor hearts
             if (Config.deriveFromDropped.get()) {
-                val entityList = event.entity.world.getEntitiesInAABBexcluding(event.source.trueSource, (event.source.trueSource as LivingEntity).boundingBox.grow(10.0)) { it is ItemEntity }
+                val trueSource = event.source.trueSource
 
-                for (loopEntity in entityList) {
-                    when (val item = (loopEntity as ItemEntity).item.item) {
-                        is Heart -> {
-                            heartCount += item.type.healsBy
+                if (trueSource is LivingEntity) {
+                    val entityList = event.entity.world.getEntitiesInAABBexcluding(
+                            trueSource,
+                            trueSource.boundingBox.grow(10.0)
+                    ) { it is ItemEntity }
+
+                    for (loopEntity in entityList) {
+                        when (val item = (loopEntity as ItemEntity).item.item) {
+                            is Heart -> {
+                                heartCount += item.type.healsBy
+                            }
                         }
                     }
                 }
@@ -176,7 +190,10 @@ object ForgeEventHandler {
                             heartList)
                 } else {
                     // Drops one if you only need half to fill
-                    if ((event.source.trueSource as LivingEntity).health + 1 == (event.source.trueSource as LivingEntity).maxHealth) {
+                    val trueSource = event.source.trueSource
+
+                    if (trueSource is LivingEntity &&
+                            trueSource.health + 1 == trueSource.maxHealth) {
                         HeartType.HALF.drop(event,
                                 1,
                                 heartList)
