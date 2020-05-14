@@ -23,6 +23,8 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemStack
+import net.minecraft.potion.PotionEffect
+import net.minecraft.potion.PotionUtils
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.event.AttachCapabilitiesEvent
@@ -32,6 +34,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.registry.ForgeRegistries
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 object ForgeEventHandler {
@@ -229,6 +232,7 @@ object ForgeEventHandler {
                 } else {
                     // Drops one if you only need half to fill
                     val trueSource = event.source.trueSource
+                    
                     if (trueSource is EntityLivingBase &&
                             trueSource.health + 1 == trueSource.maxHealth) {
                         HeartType.HALF.drop(event,
