@@ -9,7 +9,6 @@ import com.deflatedpickle.heartdrops.capability.DropHearts
 import com.deflatedpickle.heartdrops.configs.GeneralConfig
 import com.deflatedpickle.heartdrops.init.Item
 import com.deflatedpickle.heartdrops.item.CrystalHeart
-import com.deflatedpickle.heartdrops.item.GoldenHeart
 import com.deflatedpickle.heartdrops.item.Heart
 import kotlin.math.floor
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -78,17 +77,7 @@ object ForgeEventHandler {
     @SubscribeEvent
     fun onItemTossEvent(event: ItemTossEvent) {
         if (event.entityItem.item.item is CrystalHeart) {
-            // How helpful it is to tell us what's bad...
-            // Otherwise, you'd be stuck with good and bad effects
-            // I'm not writing more code to filter them out :^)
-            ForgeRegistries.POTIONS.valuesCollection.filter { !it.isInstant && !it.isBadEffect }.toList().apply {
-                PotionUtils.appendEffects(event.entityItem.item, mutableListOf(PotionEffect(
-                        this[HeartDrops.random.nextInt(this.size)],
-                        // It should last for *enough* time to get use out of it
-                        // TODO: Make crystal heart effects further customisable
-                        HeartDrops.random.nextInt(20 * 20, 20 * 30)
-                )))
-            }
+            CrystalHeart.applyPotion(event.entityItem.item)
         }
     }
 
