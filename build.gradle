@@ -17,7 +17,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'kotlin'
 
-version = "1.14.4-3.0.0.3"
+version = "1.14.4-3.0.0.4"
 group = "com.deflatedpickle.heartdrops"
 archivesBaseName = 'heartdrops'
 
