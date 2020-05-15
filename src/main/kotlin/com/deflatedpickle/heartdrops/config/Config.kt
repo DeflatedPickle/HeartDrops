@@ -59,7 +59,7 @@ object Config {
                         "PERCENTAGE_OF_MOB_HEALTH = The percentage of the health"
                 )
                 .translation("config.heartdrops.dromAmountValue")
-                .defineInRange("dropAmount", 20, 1, 100)
+                .defineInRange("dropAmountValue", 20, 1, 100)
 
         // deriveFromDropped
         deriveFromDropped = builder
